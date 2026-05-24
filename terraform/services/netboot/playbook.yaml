@@ -1,0 +1,22 @@
+- name: install netboot.xyz
+  hosts: all
+  become: true
+
+  tasks:
+    - name: install dependencies
+      ansible.builtin.package:
+        name:
+          - git
+          - apache2
+        state: present
+
+    - name: clone netboot.xyz
+      ansible.builtin.git:
+        repo: https://github.com/netbootxyz/netboot.xyz.git
+        dest: /opt/netboot.xyz
+        version: master
+
+    - name: run netboot.xyz ansible playbook
+      ansible.builtin.command:
+        cmd: ansible-playbook -i inventory site.yaml
+        chdir: /opt/netboot.xyz

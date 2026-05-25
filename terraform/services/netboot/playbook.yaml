@@ -13,6 +13,7 @@
         name:
           - git
           - ansible
+          - tftpd-hpa
         state: present
         update_cache: true
 
@@ -27,3 +28,18 @@
       ansible.builtin.command:
         cmd: ansible-playbook -i inventory site.yml
         chdir: /opt/netboot.xyz
+
+    - name: configure tftpd-hpa
+      ansible.builtin.copy:
+        dest: /etc/default/tftpd-hpa
+        content: |
+          TFTP_USERNAME="tftp"
+          TFTP_DIRECTORY="/var/www/html"
+          TFTP_ADDRESS=":69"
+          TFTP_OPTIONS="--secure"
+
+    - name: enable and start tftpd-hpa
+      ansible.builtin.service:
+        name: tftpd-hpa
+        enabled: true
+        state: restarted

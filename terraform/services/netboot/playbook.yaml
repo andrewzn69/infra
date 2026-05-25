@@ -1,22 +1,29 @@
 - name: install netboot.xyz
   hosts: all
   become: true
+  gather_facts: false
 
   tasks:
+    - name: wait for connection
+      ansible.builtin.wait_for_connection:
+        timeout: 120
+
     - name: install dependencies
       ansible.builtin.package:
         name:
           - git
-          - apache2
+          - ansible
         state: present
+        update_cache: true
 
     - name: clone netboot.xyz
       ansible.builtin.git:
         repo: https://github.com/netbootxyz/netboot.xyz.git
         dest: /opt/netboot.xyz
         version: master
+        force: true
 
     - name: run netboot.xyz ansible playbook
       ansible.builtin.command:
-        cmd: ansible-playbook -i inventory site.yaml
+        cmd: ansible-playbook -i inventory site.yml
         chdir: /opt/netboot.xyz

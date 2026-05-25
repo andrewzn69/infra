@@ -32,12 +32,6 @@ variable "disk_size" {
 
 # network
 
-variable "bridge" {
-  type        = string
-  description = "Network bridge for the container"
-  default     = "vmbr0"
-}
-
 variable "gateway_ip" {
   type        = string
   description = "IPv4 gateway"

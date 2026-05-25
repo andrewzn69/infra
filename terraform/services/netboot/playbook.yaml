@@ -14,6 +14,12 @@
           - git
           - ansible
           - tftpd-hpa
+          - gcc
+          - make
+          - perl
+          - liblzma-dev
+          - mtools
+          - xz-utils
         state: present
         update_cache: true
 
@@ -72,3 +78,29 @@
       ansible.builtin.service:
         name: apache2
         state: restarted
+
+    - name: clone ipxe
+      ansible.builtin.git:
+        repo: https://github.com/ipxe/ipxe.git
+        dest: /opt/ipxe
+        version: master
+        force: true
+
+    - name: create ipxe boot script
+      ansible.builtin.copy:
+        dest: /opt/ipxe/src/boot.ipxe
+        content: |
+          #!ipxe
+          dhcp
+          chain http://{{ boot_domain }}/menu.ipxe
+
+    - name: build ipxe efi binary
+      ansible.builtin.command:
+        cmd: make bin-x86_64-efi/snponly.efi EMBED=boot.ipxe TRUST=/etc/ssl/certs/ca-certificates.crt
+        chdir: /opt/ipxe/src
+
+    - name: copy ipxe binary to web root
+      ansible.builtin.copy:
+        src: /opt/ipxe/src/bin-x86_64-efi/snponly.efi
+        dest: /var/www/html/ipxe/netboot.xyz-custom.efi
+        remote_src: true

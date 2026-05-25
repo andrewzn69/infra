@@ -25,5 +25,9 @@ resource "ansible_playbook" "netboot" {
   playbook   = "${path.module}/playbook.yaml"
   replayable = true
 
+  extra_vars = {
+    boot_domain = split("/", var.ip_address)[0]
+  }
+
   depends_on = [module.lxc]
 }

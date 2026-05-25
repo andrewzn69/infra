@@ -24,6 +24,13 @@
         version: master
         force: true
 
+    - name: configure local boot domain
+      ansible.builtin.copy:
+        dest: /opt/netboot.xyz/user_overrides.yml
+        content: |
+          boot_domain: {{ boot_domain }}
+          live_endpoint: http://{{ boot_domain }}/cgi-bin/ghproxy
+
     - name: run netboot.xyz ansible playbook
       ansible.builtin.command:
         cmd: ansible-playbook -i inventory site.yml
@@ -42,4 +49,26 @@
       ansible.builtin.service:
         name: tftpd-hpa
         enabled: true
+        state: restarted
+
+    - name: enable apache cgid module
+      ansible.builtin.command:
+        cmd: a2enmod cgid
+      register: cgid_result
+      changed_when: "'already enabled' not in cgid_result.stdout"
+
+    - name: create ghproxy cgi script
+      ansible.builtin.copy:
+        dest: /usr/lib/cgi-bin/ghproxy
+        mode: "0755"
+        content: |
+          #!/bin/bash
+          SUFFIX="${REQUEST_URI#/cgi-bin/ghproxy}"
+          echo "Content-Type: application/octet-stream"
+          echo ""
+          exec wget -q -O - "https://github.com/netbootxyz${SUFFIX}"
+
+    - name: restart apache
+      ansible.builtin.service:
+        name: apache2
         state: restarted

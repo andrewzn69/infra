@@ -18,10 +18,6 @@ module "lxc" {
 resource "ansible_host" "netboot" {
   name   = module.lxc.ipv4_address
   groups = ["netboot"]
-
-  variables = {
-    ansible_user = "root"
-  }
 }
 
 resource "ansible_playbook" "netboot" {

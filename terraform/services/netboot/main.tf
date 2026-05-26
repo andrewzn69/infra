@@ -1,5 +1,5 @@
 module "lxc" {
-  source = "git::https://github.com/andrewzn69/tf-proxmox-lxc.git"
+  source = "git::https://github.com/andrewzn69/tf-proxmox-lxc.git?ref=v0.1.0"
 
   hostname              = var.hostname
   node_name             = var.node_name

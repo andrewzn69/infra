@@ -1,10 +1,5 @@
 # cluster
 
-variable "cluster_endpoint" {
-  type        = string
-  description = "Full URL of the Kubernetes API endpoint"
-}
-
 variable "cluster_name" {
   type        = string
   description = "Name of the cluster"

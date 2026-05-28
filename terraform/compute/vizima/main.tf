@@ -25,7 +25,7 @@ module "proxmox_k8s_cluster" {
 module "talos_cluster" {
   source = "git::https://github.com/andrewzn69/tf-talos-cluster.git?ref=v0.1.2"
 
-  cluster_endpoint            = var.cluster_endpoint
+  cluster_endpoint            = local.cluster_endpoint
   cluster_name                = var.cluster_name
   control_plane_ips           = module.proxmox_k8s_cluster.control_plane_ips
   worker_ips                  = module.proxmox_k8s_cluster.worker_ips

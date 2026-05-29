@@ -7,7 +7,7 @@ module "talos_schematic" {
   schematic_extensions = var.schematic_extensions
   bootloader           = null
   extra_kernel_args    = []
-  platform             = null
+  platform             = "nocloud"
   sbc                  = null
 }
 

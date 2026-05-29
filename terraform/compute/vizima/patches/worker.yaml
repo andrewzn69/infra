@@ -4,3 +4,4 @@ name: data
 provisioning:
   diskSelector:
     match: "!system_disk"
+  minSize: 50GiB

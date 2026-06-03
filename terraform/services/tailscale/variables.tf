@@ -6,13 +6,13 @@ variable "auto_approvers" {
 }
 
 variable "acl_tests" {
-  description = "List of ACL policy assertions validated on every apply"
   type = list(object({
     src    = string
     accept = optional(list(string), [])
     deny   = optional(list(string), [])
   }))
-  default = []
+  description = "List of ACL policy assertions validated on every apply"
+  default     = []
 }
 
 variable "grants" {
@@ -118,8 +118,8 @@ variable "devices_auto_updates_on" {
 }
 
 variable "devices_key_duration_days" {
-  description = "Key expiry duration in days for devices"
   type        = number
+  description = "Key expiry duration in days for devices"
 }
 
 variable "https_enabled" {
@@ -162,10 +162,10 @@ variable "tailnet" {
 # webhooks
 
 variable "webhooks" {
-  description = "Webhook endpoints to create, keyed by name"
   type = map(object({
     endpoint_url  = string
     provider_type = optional(string)
     subscriptions = set(string)
   }))
+  description = "Webhook endpoints to create, keyed by name"
 }

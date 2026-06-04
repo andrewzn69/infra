@@ -110,3 +110,16 @@ variable "talos_version" {
   type        = string
   description = "Talos version"
 }
+
+# tailscale
+
+variable "tailscale_api_key" {
+  type        = string
+  description = "Tailscale API key"
+  sensitive   = true
+}
+
+variable "tailnet" {
+  type        = string
+  description = "Tailscale tailnet name"
+}

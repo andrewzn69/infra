@@ -22,6 +22,15 @@ module "proxmox_k8s_cluster" {
   worker_groups        = var.worker_groups
 }
 
+resource "tailscale_tailnet_key" "node" {
+  description   = "vizima tag:vizima-node registration" # needs to be hardcoded because acl in tailscale
+  ephemeral     = false
+  expiry        = 1000
+  preauthorized = true
+  reusable      = true
+  tags          = ["tag:vizima-node"]
+}
+
 module "talos_cluster" {
   source = "git::https://github.com/andrewzn69/tf-talos-cluster.git?ref=v0.1.2"
 
@@ -33,8 +42,8 @@ module "talos_cluster" {
   installer_image             = module.talos_schematic.installer_image
   talos_version               = var.talos_version
   install_disk                = var.install_disk
-  extra_control_plane_patches = [file("${path.module}/patches/controlplane.yaml")]
-  extra_worker_patches        = [file("${path.module}/patches/worker.yaml")]
+  extra_control_plane_patches = [file("${path.module}/patches/controlplane.yaml"), templatefile("${path.module}/patches/tailscale.yaml.tpl", { auth_key = tailscale_tailnet_key.node.key })]
+  extra_worker_patches        = [file("${path.module}/patches/worker.yaml"), templatefile("${path.module}/patches/tailscale.yaml.tpl", { auth_key = tailscale_tailnet_key.node.key })]
 }
 
 module "cilium" {

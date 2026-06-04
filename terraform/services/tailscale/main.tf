@@ -33,6 +33,7 @@ resource "tailscale_contacts" "this" {
 # dns
 
 resource "tailscale_dns_nameservers" "this" {
+  count       = length(var.dns_nameservers) > 0 ? 1 : 0
   nameservers = var.dns_nameservers
 }
 

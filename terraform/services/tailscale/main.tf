@@ -61,7 +61,7 @@ resource "tailscale_tailnet_key" "this" {
 # settings
 
 resource "tailscale_tailnet_settings" "this" {
-  acls_external_link                          = var.acls_external_link
+  acls_external_link                          = var.acls_external_link != "" ? var.acls_external_link : null
   acls_externally_managed_on                  = var.acls_externally_managed_on
   devices_approval_on                         = var.devices_approval_on
   devices_auto_updates_on                     = var.devices_auto_updates_on

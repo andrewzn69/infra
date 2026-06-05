@@ -16,7 +16,7 @@ resource "cloudflare_email_routing_rule" "this" {
   actions  = each.value.actions
 }
 
-resource "cloudflare_email_routing_rule" "catch_all" {
+resource "cloudflare_email_routing_catch_all" "this" {
   for_each = var.email_catch_all
 
   zone_id = cloudflare_zone.this[each.value.zone_name].id

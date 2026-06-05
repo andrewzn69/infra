@@ -17,9 +17,8 @@ variable "account_id" {
 
 variable "zones" {
   type = map(object({
-    paused        = bool
-    type          = string
-    email_routing = bool
+    paused = bool
+    type   = string
   }))
   description = "DNS zones to manage, keyed by zone name"
 }

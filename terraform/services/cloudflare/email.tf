@@ -2,7 +2,6 @@ resource "cloudflare_email_routing_settings" "this" {
   for_each = var.zones
 
   zone_id = cloudflare_zone.this[each.key].id
-  enabled = each.value.email_routing
 }
 
 resource "cloudflare_email_routing_rule" "this" {

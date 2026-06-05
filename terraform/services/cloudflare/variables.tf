@@ -77,15 +77,3 @@ variable "email_catch_all" {
   }))
   description = "Catch-all email routing rules keyed by zone name"
 }
-
-# zero trust
-
-variable "access_applications" {
-  type = map(object({
-    name             = string
-    domain           = string
-    type             = string
-    session_duration = string
-  }))
-  description = "Zero Trust Access applications, keyed by unique identifier"
-}

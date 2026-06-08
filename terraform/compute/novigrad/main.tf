@@ -8,7 +8,7 @@ resource "tailscale_tailnet_key" "node" {
 }
 
 module "oke" {
-  source = "git::https://github.com/andrewzn69/tf-oci-free-oke.git?ref=v0.1.6"
+  source = "git::https://github.com/andrewzn69/tf-oci-free-oke.git?ref=v0.1.7"
 
   compartment_id           = var.compartment_id
   name                     = var.name
@@ -21,6 +21,7 @@ module "oke" {
   node_memory_gb           = var.node_memory_gb
   node_boot_volume_size_gb = var.node_boot_volume_size_gb
   node_data_volume_size_gb = var.node_data_volume_size_gb
+  lb_subnet_cidr_block     = "10.0.2.0/24"
   pods_cidr                = var.pods_cidr
   services_cidr            = var.services_cidr
   ssh_public_key           = var.ssh_public_key

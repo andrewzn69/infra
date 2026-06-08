@@ -23,7 +23,7 @@ module "proxmox_k8s_cluster" {
 }
 
 resource "tailscale_tailnet_key" "node" {
-  description   = "vizima tag:vizima-node registration" # needs to be hardcoded because acl in tailscale
+  description   = "vizima vizima-node registration" # needs to be hardcoded because acl in tailscale
   ephemeral     = false
   expiry        = 2000
   preauthorized = true

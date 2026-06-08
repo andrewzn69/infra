@@ -4,3 +4,6 @@ cluster:
       name: none
   proxy:
     disabled: true
+  etcd:
+    advertisedSubnets:
+      - 192.168.1.0/24

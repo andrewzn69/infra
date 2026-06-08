@@ -8,7 +8,7 @@ resource "tailscale_tailnet_key" "node" {
 }
 
 module "oke" {
-  source = "git::https://github.com/andrewzn69/tf-oci-free-oke.git?ref=v0.1.2"
+  source = "git::https://github.com/andrewzn69/tf-oci-free-oke.git?ref=v0.1.3"
 
   compartment_id           = var.compartment_id
   name                     = var.name

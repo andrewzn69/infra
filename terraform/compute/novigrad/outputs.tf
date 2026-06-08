@@ -1,3 +1,8 @@
+output "lb_subnet_id" {
+  value       = module.oke.lb_subnet_id
+  description = "OCID of the public LB subnet"
+}
+
 output "cluster_endpoint" {
   value       = module.oke.cluster_endpoint
   description = "OKE cluster API endpoint"
@@ -12,9 +17,4 @@ output "kubeconfig" {
   value       = module.oke.kubeconfig
   description = "Kubeconfig for the OKE cluster"
   sensitive   = true
-}
-
-output "node_ids_debug" {
-  value       = module.oke.node_ids
-  description = "debug - remove after volume attachment is confirmed working"
 }

@@ -61,15 +61,15 @@ resource "tailscale_tailnet_key" "this" {
 # settings
 
 resource "tailscale_tailnet_settings" "this" {
-  acls_external_link                          = var.acls_external_link != "" ? var.acls_external_link : null
-  acls_externally_managed_on                  = var.acls_externally_managed_on
-  devices_approval_on                         = var.devices_approval_on
-  devices_auto_updates_on                     = var.devices_auto_updates_on
-  devices_key_duration_days                   = var.devices_key_duration_days
-  https_enabled                               = var.https_enabled
-  network_flow_logging_on                     = var.network_flow_logging_on
-  posture_identity_collection_on              = var.posture_identity_collection_on
-  regional_routing_on                         = var.regional_routing_on
+  acls_external_link         = var.acls_external_link != "" ? var.acls_external_link : null
+  acls_externally_managed_on = var.acls_externally_managed_on
+  devices_approval_on        = var.devices_approval_on
+  devices_auto_updates_on    = var.devices_auto_updates_on
+  devices_key_duration_days  = var.devices_key_duration_days
+  https_enabled              = var.https_enabled
+  # network_flow_logging_on                    = var.network_flow_logging_on - requires a paid plan - API rejects the field on free tier
+  posture_identity_collection_on = var.posture_identity_collection_on
+  # regional_routing_on                        = var.regional_routing_on - same thing
   users_approval_on                           = var.users_approval_on
   users_role_allowed_to_join_external_tailnet = var.users_role_allowed_to_join_external_tailnet
 }

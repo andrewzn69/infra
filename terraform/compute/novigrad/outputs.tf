@@ -13,3 +13,8 @@ output "kubeconfig" {
   description = "Kubeconfig for the OKE cluster"
   sensitive   = true
 }
+
+output "node_ids_debug" {
+  value       = module.oke.node_ids
+  description = "debug - remove after volume attachment is confirmed working"
+}

@@ -32,7 +32,7 @@ resource "tailscale_tailnet_key" "node" {
 }
 
 module "talos_cluster" {
-  source = "git::https://github.com/andrewzn69/tf-talos-cluster.git?ref=v0.1.2"
+  source = "git::https://github.com/andrewzn69/tf-talos-cluster.git?ref=v0.1.3"
 
   cluster_endpoint            = local.cluster_endpoint
   cluster_name                = var.cluster_name

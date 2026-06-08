@@ -1,5 +1,5 @@
 resource "tailscale_tailnet_key" "node" {
-  description   = "novigrad tag:novigrad-node registration"
+  description   = "novigrad novigrad-node registration" # needs to be hardcoded because acl in tailscale
   ephemeral     = false
   expiry        = 2000
   preauthorized = true

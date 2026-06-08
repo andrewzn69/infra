@@ -1,13 +1,13 @@
 terraform {
   required_version = "~> 1.15"
 
-  # cloud {
-  #   organization = "zemn"
-  #
-  #   workspaces {
-  #     name = "novigrad"
-  #   }
-  # }
+  cloud {
+    organization = "zemn"
+
+    workspaces {
+      name = "novigrad"
+    }
+  }
 
   required_providers {
     helm = {

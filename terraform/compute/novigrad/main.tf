@@ -45,4 +45,6 @@ module "cilium" {
   cilium_version   = var.cilium_version
   values_default   = "oke"
   cluster_endpoint = "https://${module.oke.cluster_endpoint}"
+
+  depends_on = [module.oke]
 }

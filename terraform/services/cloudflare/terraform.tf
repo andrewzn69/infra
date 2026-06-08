@@ -1,6 +1,14 @@
 terraform {
   required_version = "~> 1.15"
 
+  cloud {
+    organization = "zemn"
+
+    workspaces {
+      name = "cloudflare"
+    }
+  }
+
   required_providers {
     cloudflare = {
       source  = "cloudflare/cloudflare"

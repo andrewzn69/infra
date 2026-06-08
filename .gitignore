@@ -9,8 +9,6 @@ crash.*.log
 *.tfvars
 *.tfvars.json
 
-.terraform.lock.hcl
-
 override.tf
 override.tf.json
 *_override.tf

@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: infisical-operator
+  namespace: argocd
+spec:
+  generators:
+    - clusters: {}
+  template:
+    metadata:
+      name: infisical-operator-{{name}}
+      namespace: argocd
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: default
+      sources:
+        - repoURL: https://github.com/andrewzn69/infra
+          targetRevision: HEAD
+          ref: infra
+        - repoURL: https://dl.cloudsmith.io/public/infisical/helm-charts/helm/charts
+          chart: secrets-operator
+          targetRevision: 0.10.28
+          helm:
+            releaseName: infisical-operator
+            valueFiles:
+              - $infra/apps/infrastructure/infisical-operator/values.yaml
+      destination:
+        server: "{{server}}"
+        namespace: infisical-system
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true

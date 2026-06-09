@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    - repoURL: https://github.com/andrewzn69/infra
+      targetRevision: HEAD
+      ref: infra
+    - repoURL: oci://quay.io/jetstack/charts
+      chart: cert-manager
+      targetRevision: v1.20.2
+      helm:
+        releaseName: cert-manager
+        valueFiles:
+          - $infra/apps/infrastructure/cert-manager/operator/values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cert-manager
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  ignoreDifferences:
+    # cert-manager updates ClusterIssuer status at runtime - ignore to prevent permanent out of sync
+    - group: cert-manager.io
+      kind: ClusterIssuer
+      jsonPointers:
+        - /status

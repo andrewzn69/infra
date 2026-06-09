@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tailscale-connector-novigrad
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/skip-reconcile: "true"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/andrewzn69/infra
+    targetRevision: HEAD
+    path: apps/infrastructure/tailscale/connector/novigrad
+  destination:
+    name: novigrad
+    namespace: tailscale-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false

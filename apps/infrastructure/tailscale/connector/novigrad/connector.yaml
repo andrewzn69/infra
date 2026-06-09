@@ -1,0 +1,15 @@
+apiVersion: tailscale.com/v1alpha1
+kind: Connector
+metadata:
+  name: novigrad-connector
+  namespace: tailscale-system
+spec:
+  hostname: novigrad-connector
+  exitNode: false
+  tags:
+    - tag:k8s-operator
+  subnetRouter:
+    advertiseRoutes:
+      - 10.245.0.0/16
+      - 10.97.0.0/12
+      - 10.0.0.0/24

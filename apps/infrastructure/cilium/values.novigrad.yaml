@@ -1,0 +1,10 @@
+ipam:
+  mode: kubernetes
+
+kubeProxyReplacement: true
+
+nodeInit:
+  enabled: true
+
+gatewayAPI:
+  enabled: true

@@ -1,0 +1,14 @@
+apiVersion: tailscale.com/v1alpha1
+kind: Connector
+metadata:
+  name: vizima-connector
+  namespace: tailscale-system
+spec:
+  hostname: vizima-connector
+  exitNode: false
+  tags:
+    - tag:k8s-operator
+  subnetRouter:
+    advertiseRoutes:
+      - 10.244.0.0/16
+      - 10.96.0.0/12

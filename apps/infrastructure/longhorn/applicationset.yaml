@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: longhorn
+  namespace: argocd
+spec:
+  generators:
+    - clusters: {}
+  template:
+    metadata:
+      name: longhorn-{{name}}
+      namespace: argocd
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: default
+      sources:
+        - repoURL: git@github.com:andrewzn69/infra.git
+          targetRevision: HEAD
+          ref: infra
+        - repoURL: https://charts.longhorn.io
+          chart: longhorn
+          targetRevision: 1.12.0
+          helm:
+            releaseName: longhorn
+            valueFiles:
+              - $infra/apps/infrastructure/longhorn/values.{{name}}.yaml
+      destination:
+        server: "{{server}}"
+        namespace: longhorn-system
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+        managedNamespaceMetadata:
+          labels:
+            pod-security.kubernetes.io/enforce: privileged
+            pod-security.kubernetes.io/audit: privileged
+            pod-security.kubernetes.io/warn: privileged

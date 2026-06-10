@@ -23,8 +23,12 @@ spec:
             values: |
               operatorConfig:
                 hostname: {{name}}-k8s-operator
+                image:
+                  repository: docker.io/tailscale/k8s-operator
               proxyConfig:
                 defaultTags: tag:k8s-operator
+                image:
+                  repository: docker.io/tailscale/tailscale
       destination:
         server: "{{server}}"
         namespace: tailscale-system

@@ -39,6 +39,23 @@ module "oke" {
   ]
 }
 
+resource "terraform_data" "wait_for_oke_endpoint" {
+  triggers_replace = module.oke.cluster_id
+
+  depends_on = [module.oke]
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      for i in $(seq 1 60); do
+        curl -sk --max-time 3 "https://${module.oke.cluster_endpoint}/version" && exit 0
+        sleep 5
+      done
+      echo "timed out waiting for OKE API endpoint" >&2
+      exit 1
+    EOT
+  }
+}
+
 module "cilium" {
   source = "git::https://github.com/andrewzn69/tf-cilium.git?ref=v0.1.4"
 
@@ -46,5 +63,5 @@ module "cilium" {
   values_default   = "oke"
   cluster_endpoint = "https://${module.oke.cluster_endpoint}"
 
-  depends_on = [module.oke]
+  depends_on = [module.oke, terraform_data.wait_for_oke_endpoint]
 }

@@ -15,7 +15,7 @@ spec:
     spec:
       project: default
       sources:
-        - repoURL: https://github.com/andrewzn69/infra
+        - repoURL: git@github.com:andrewzn69/infra.git
           targetRevision: HEAD
           ref: infra
         - repoURL: https://dl.cloudsmith.io/public/infisical/helm-charts/helm/charts

@@ -13,7 +13,7 @@ spec:
     path: apps/infrastructure
     directory:
       recurse: true
-      include: "{application,applicationset}.yaml"
+      include: "**/{application,applicationset}.yaml"
   destination:
     name: vizima
     namespace: argocd

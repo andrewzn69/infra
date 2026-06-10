@@ -11,6 +11,8 @@ spec:
     repoURL: git@github.com:andrewzn69/infra.git
     targetRevision: HEAD
     path: apps/infrastructure/tailscale/connector/novigrad
+    directory:
+      exclude: "application.yaml"
   destination:
     name: novigrad
     namespace: tailscale-system

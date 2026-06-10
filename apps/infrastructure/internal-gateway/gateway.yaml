@@ -1,0 +1,27 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: internal
+  namespace: gateway-system
+  annotations:
+    tailscale.com/hostname: vizima-internal-gateway
+spec:
+  gatewayClassName: cilium-internal
+  listeners:
+    - name: http
+      port: 80
+      protocol: HTTP
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: https
+      port: 443
+      protocol: HTTPS
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: zemn-wildcard-tls
+            namespace: cert-manager
+      allowedRoutes:
+        namespaces:
+          from: All

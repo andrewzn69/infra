@@ -14,13 +14,13 @@ fi
 /usr/libexec/oci-growfs -y
 
 # format and mount data volume
-if ! blkid /dev/sdb $ > /dev/null; then
+if ! blkid /dev/sdb &>/dev/null; then
   mkfs.xfs /dev/sdb
 fi
 
 mkdir -p /var/mnt/data
 data_uuid=$(blkid -s UUID -o value /dev/sdb)
-grep -q "$data_uuid" /etc/fstab || echo "UUID=${data_uuid} /var/mnt/data xfs defaults 0 2" >> /etc/fstab
+grep -q "$data_uuid" /etc/fstab || echo "UUID=$${data_uuid} /var/mnt/data xfs defaults 0 2" >> /etc/fstab
 mount -a
 
 # install tailscale

@@ -3,8 +3,6 @@ kind: Application
 metadata:
   name: tailscale-connector-novigrad
   namespace: argocd
-  annotations:
-    argocd.argoproj.io/skip-reconcile: "true"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:

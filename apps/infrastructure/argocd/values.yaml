@@ -1,0 +1,97 @@
+global:
+  domain: argocd.internal.zemn.xyz
+
+configs:
+  params:
+    server.insecure: "true"
+    server.url: "https://argocd.internal.zemn.xyz"
+
+server:
+  replicas: 1
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 100m
+    limits:
+      memory: 256Mi
+      cpu: 200m
+  httproute:
+    enabled: true
+    parentRefs:
+      - name: internal
+        namespace: gateway-system
+        sectionName: https
+    hostnames:
+      - argocd.internal.zemn.xyz
+    rules:
+      - matches:
+          - path:
+              type: PathPrefix
+              value: /
+  grpcroute:
+    enabled: true
+    parentRefs:
+      - name: internal
+        namespace: gateway-system
+        sectionName: https
+    hostnames:
+      - argocd.internal.zemn.xyz
+    rules:
+      - {}
+
+repoServer:
+  replicas: 1
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 100m
+    limits:
+      memory: 384Mi
+      cpu: 250m
+
+applicationSet:
+  replicas: 1
+  resources:
+    requests:
+      memory: 64Mi
+      cpu: 100m
+    limits:
+      memory: 128Mi
+      cpu: 200m
+
+dex:
+  enabled: false
+  resources:
+    requests:
+      memory: 64Mi
+      cpu: 50m
+    limits:
+      memory: 128Mi
+      cpu: 100m
+
+redis:
+  resources:
+    requests:
+      memory: 32Mi
+      cpu: 100m
+    limits:
+      memory: 128Mi
+      cpu: 200m
+
+notifications:
+  resources:
+    requests:
+      memory: 64Mi
+      cpu: 50m
+    limits:
+      memory: 128Mi
+      cpu: 100m
+
+controller:
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 250m
+    limits:
+      memory: 1Gi
+      cpu: 500m

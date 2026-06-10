@@ -12,7 +12,7 @@ spec:
     targetRevision: HEAD
     path: apps/infrastructure/cert-manager/issuers
   destination:
-    server: https://kubernetes.default.svc
+    name: vizima
     namespace: cert-manager
   syncPolicy:
     automated:

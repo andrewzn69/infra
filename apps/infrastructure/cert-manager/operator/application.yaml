@@ -19,7 +19,7 @@ spec:
         valueFiles:
           - $infra/apps/infrastructure/cert-manager/operator/values.yaml
   destination:
-    server: https://kubernetes.default.svc
+    name: vizima
     namespace: cert-manager
   syncPolicy:
     automated:

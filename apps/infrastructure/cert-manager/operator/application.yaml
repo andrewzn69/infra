@@ -11,8 +11,7 @@ spec:
     - repoURL: git@github.com:andrewzn69/infra.git
       targetRevision: HEAD
       ref: infra
-    - repoURL: oci://quay.io/jetstack/charts
-      chart: cert-manager
+    - repoURL: oci://quay.io/jetstack/charts/cert-manager
       targetRevision: v1.20.2
       helm:
         releaseName: cert-manager

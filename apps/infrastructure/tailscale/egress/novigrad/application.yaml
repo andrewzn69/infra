@@ -16,9 +16,19 @@ spec:
   destination:
     name: vizima
     namespace: tailscale-system
+  # tailscale operator overwrites spec.externalName on the egress service with the
+  # proxy pods in-cluster hostname, without this, selfHeal resets it to "placeholder"
+  # and breaks the egress route
+  ignoreDifferences:
+    - group: ""
+      kind: Service
+      name: novigrad-oke-api
+      jsonPointers:
+        - /spec/externalName
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=false
+      - RespectIgnoreDifferences=true

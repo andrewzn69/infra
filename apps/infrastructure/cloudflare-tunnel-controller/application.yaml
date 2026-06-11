@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cloudflare-tunnel-controller
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    - repoURL: git@github.com:andrewzn69/infra.git
+      targetRevision: HEAD
+      ref: infra
+    - repoURL: git@github.com:andrewzn69/infra.git
+      targetRevision: HEAD
+      path: apps/infrastructure/cloudflare-tunnel-controller
+      directory:
+        include: "infisical-secret.yaml"
+    - repoURL: https://helm.strrl.dev
+      chart: cloudflare-tunnel-ingress-controller
+      targetRevision: 0.0.23
+      helm:
+        releaseName: cloudflare-tunnel-controller
+        valueFiles:
+          - $infra/apps/infrastructure/cloudflare-tunnel-controller/values.yaml
+  destination:
+    name: novigrad
+    namespace: cloudflare-tunnel-controller
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

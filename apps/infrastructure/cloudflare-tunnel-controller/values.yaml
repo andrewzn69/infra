@@ -1,0 +1,9 @@
+cloudflare:
+  secretRef:
+    name: cloudflare-api
+    accountIDKey: cloudflare-account-id
+    tunnelNameKey: cloudflare-tunnel-name
+    apiTokenKey: api-token
+
+ingressClass:
+  name: cloudflare-tunnel

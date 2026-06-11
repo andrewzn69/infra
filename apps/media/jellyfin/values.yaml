@@ -1,0 +1,75 @@
+namespace: media
+
+components:
+  jellyfin:
+    image:
+      repository: docker.io/jellyfin/jellyfin
+      tag: "10.11.8"
+      pullPolicy: IfNotPresent
+
+    replicaCount: 0
+
+    service:
+      type: ClusterIP
+      port: 8096
+      targetPort: 8096
+      protocol: TCP
+      name: http
+
+    volumes:
+      pvc:
+        - name: config
+          mountPath: /config
+          size: 10Gi
+          accessMode: ReadWriteOnce
+          storageClassName: longhorn
+
+      nfs:
+        - name: movies
+          mountPath: /media/Movies
+          server: "100.64.100.10"
+          path: "/storage/media/movies"
+          readOnly: true
+        - name: shows
+          mountPath: /media/Shows
+          server: "100.64.100.10"
+          path: "/storage/media/shows"
+          readOnly: true
+
+      emptyDir:
+        - name: cache
+          mountPath: /cache
+        - name: tmp
+          mountPath: /tmp
+
+    cloudflare:
+      enabled: true
+      hostname: jellyfin.zemn.xyz
+      paths:
+        - path: /
+          pathType: Prefix
+
+    resources:
+      requests:
+        memory: 512Mi
+        cpu: 500m
+      limits:
+        memory: 3Gi
+        cpu: 3000m
+
+    podSecurityContext:
+      runAsUser: 10001
+      runAsGroup: 10001
+      fsGroup: 10001
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+
+    env: []

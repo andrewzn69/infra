@@ -17,6 +17,7 @@ components:
       name: voice
       annotations:
         oci.oraclecloud.com/load-balancer-type: "nlb"
+        oci-network-load-balancer.oraclecloud.com/subnet: "ocid1.subnet.oc1.eu-frankfurt-1.aaaaaaaaoczfapclnzaqxi7mionjkmfnmboukkqir6cs7rqwzsqsn4vep2oq"
       additionalPorts:
         - name: filetransfer
           port: 30033

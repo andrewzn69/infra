@@ -11,8 +11,7 @@ spec:
     - repoURL: git@github.com:andrewzn69/infra.git
       targetRevision: HEAD
       ref: infra
-    - repoURL: oci://ghcr.io/andrewzn69
-      chart: app-template
+    - repoURL: oci://ghcr.io/andrewzn69/app-template
       targetRevision: 1.0.0
       helm:
         releaseName: teamspeak6

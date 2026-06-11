@@ -12,3 +12,4 @@ cloudflared:
   image:
     repository: docker.io/cloudflare/cloudflared
     tag: latest
+  protocol: http2

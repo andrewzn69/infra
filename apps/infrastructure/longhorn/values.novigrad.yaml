@@ -2,3 +2,5 @@ defaultSettings:
   defaultDataPath: /var/mnt/data/longhorn
 persistence:
   defaultClassReplicaCount: 2
+preUpgradeChecker:
+  jobEnabled: false

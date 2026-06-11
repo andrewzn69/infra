@@ -5,7 +5,10 @@ metadata:
   namespace: argocd
 spec:
   generators:
-    - clusters: {}
+    - list:
+        elements:
+          - name: vizima
+            server: https://kubernetes.default.svc
   template:
     metadata:
       name: longhorn-{{name}}

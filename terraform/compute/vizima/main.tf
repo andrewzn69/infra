@@ -43,7 +43,7 @@ module "talos_cluster" {
   talos_version               = var.talos_version
   install_disk                = var.install_disk
   extra_control_plane_patches = [file("${path.module}/patches/controlplane.yaml"), templatefile("${path.module}/patches/tailscale.yaml.tpl", { auth_key = tailscale_tailnet_key.node.key })]
-  extra_worker_patches        = [file("${path.module}/patches/worker.yaml"), templatefile("${path.module}/patches/tailscale.yaml.tpl", { auth_key = tailscale_tailnet_key.node.key })]
+  extra_worker_patches        = [file("${path.module}/patches/worker.yaml"), file("${path.module}/patches/worker-kubelet-extramounts.yaml"), templatefile("${path.module}/patches/tailscale.yaml.tpl", { auth_key = tailscale_tailnet_key.node.key })]
 }
 
 module "cilium" {

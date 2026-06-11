@@ -12,7 +12,7 @@ spec:
       targetRevision: HEAD
       ref: infra
     - repoURL: oci://ghcr.io/andrewzn69/app-template
-      targetRevision: 1.0.0
+      targetRevision: 1.0.1
       path: .
       helm:
         releaseName: teamspeak6

@@ -34,6 +34,11 @@ variable "services_cidr" {
   description = "Service network CIDR"
 }
 
+variable "lb_subnet_cidr_block" {
+  type        = string
+  description = "CIDR block for the public load balancer subnet"
+}
+
 # node pool
 
 variable "node_boot_volume_size_gb" {
@@ -101,6 +106,15 @@ variable "exposed_ports" {
     max      = number
   }))
   description = "Ports to open on the endpoint subnet security list. protocol: 6 = TCP, 17 = UDP"
+}
+
+variable "lb_exposed_ports" {
+  type = list(object({
+    protocol = string
+    min      = number
+    max      = number
+  }))
+  description = "Ports to open on the public load balancer subnet security list. protocol: 6 = TCP, 17 = UDP"
 }
 
 # ssh

@@ -39,6 +39,66 @@ module "oke" {
   ]
 }
 
+resource "oci_core_route_table" "lb" {
+  compartment_id = var.compartment_id
+  vcn_id         = module.oke.vcn_id
+  display_name   = "${var.name}-lb-rt"
+
+  route_rules {
+    destination       = "0.0.0.0/0"
+    destination_type  = "CIDR_BLOCK"
+    network_entity_id = module.oke.internet_gateway_id
+  }
+}
+
+resource "oci_core_security_list" "lb" {
+  compartment_id = var.compartment_id
+  vcn_id         = module.oke.vcn_id
+  display_name   = "${var.name}-lb-sl"
+
+  egress_security_rules {
+    destination = "0.0.0.0/0"
+    protocol    = "all"
+    stateless   = false
+  }
+
+  dynamic "ingress_security_rules" {
+    for_each = var.lb_exposed_ports
+    content {
+      source    = "0.0.0.0/0"
+      protocol  = ingress_security_rules.value.protocol
+      stateless = false
+
+      dynamic "tcp_options" {
+        for_each = ingress_security_rules.value.protocol == "6" ? [ingress_security_rules.value] : []
+        content {
+          min = tcp_options.value.min
+          max = tcp_options.value.max
+        }
+      }
+
+      dynamic "udp_options" {
+        for_each = ingress_security_rules.value.protocol == "17" ? [ingress_security_rules.value] : []
+        content {
+          min = udp_options.value.min
+          max = udp_options.value.max
+        }
+      }
+    }
+  }
+}
+
+resource "oci_core_subnet" "lb" {
+  compartment_id             = var.compartment_id
+  vcn_id                     = module.oke.vcn_id
+  display_name               = "${var.name}-lb-subnet"
+  cidr_block                 = var.lb_subnet_cidr_block
+  route_table_id             = oci_core_route_table.lb.id
+  security_list_ids          = [oci_core_security_list.lb.id]
+  dns_label                  = "lb"
+  prohibit_public_ip_on_vnic = false
+}
+
 resource "terraform_data" "wait_for_oke_endpoint" {
   triggers_replace = module.oke.cluster_id
 

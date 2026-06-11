@@ -13,3 +13,8 @@ output "kubeconfig" {
   description = "Kubeconfig for the OKE cluster"
   sensitive   = true
 }
+
+output "lb_subnet_id" {
+  value       = oci_core_subnet.lb.id
+  description = "OCID of the public load balancer subnet"
+}

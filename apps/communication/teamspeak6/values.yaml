@@ -7,7 +7,7 @@ components:
       tag: "6.0.0-beta10"
       pullPolicy: IfNotPresent
 
-    replicaCount: 0
+    replicaCount: 1
 
     service:
       type: LoadBalancer

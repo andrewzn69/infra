@@ -1,0 +1,63 @@
+namespace: communication
+
+components:
+  teamspeak6:
+    image:
+      repository: docker.io/teamspeaksystems/teamspeak6-server
+      tag: "6.0.0-beta10"
+      pullPolicy: IfNotPresent
+
+    replicaCount: 1
+
+    service:
+      type: LoadBalancer
+      port: 9987
+      targetPort: 9987
+      protocol: UDP
+      name: voice
+      annotations:
+        oci.oraclecloud.com/load-balancer-type: "nlb"
+      additionalPorts:
+        - name: filetransfer
+          port: 30033
+          targetPort: 30033
+          protocol: TCP
+
+    volumes:
+      pvc:
+        - name: data
+          mountPath: /var/tsserver
+          size: 5Gi
+          accessMode: ReadWriteOnce
+          storageClassName: longhorn
+
+    env:
+      - name: TSSERVER_LICENSE_ACCEPTED
+        value: "accept"
+      - name: TSSERVER_QUERY_HTTP_ENABLED
+        value: "true"
+      - name: TSSERVER_FILE_TRANSFER_IP
+        value: "0.0.0.0"
+
+    resources:
+      requests:
+        memory: 2Gi
+        cpu: 250m
+      limits:
+        memory: 4Gi
+        cpu: 1000m
+
+    podSecurityContext:
+      runAsUser: 10001
+      runAsGroup: 10001
+      fsGroup: 10001
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: false
+      capabilities:
+        drop:
+          - ALL

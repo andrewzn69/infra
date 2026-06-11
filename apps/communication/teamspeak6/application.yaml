@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: teamspeak6
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    - repoURL: git@github.com:andrewzn69/infra.git
+      targetRevision: HEAD
+      ref: infra
+    - repoURL: oci://ghcr.io/andrewzn69
+      chart: app-template
+      targetRevision: 1.0.0
+      helm:
+        releaseName: teamspeak6
+        valueFiles:
+          - $infra/apps/communication/teamspeak6/values.yaml
+  destination:
+    name: novigrad
+    namespace: communication
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

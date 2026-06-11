@@ -7,3 +7,8 @@ cloudflare:
 
 ingressClass:
   name: cloudflare-tunnel
+
+cloudflared:
+  image:
+    repository: docker.io/cloudflare/cloudflared
+    tag: latest

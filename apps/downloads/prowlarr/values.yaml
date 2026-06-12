@@ -1,4 +1,4 @@
-namespace: prowlarr
+namespace: downloads
 
 components:
   prowlarr:

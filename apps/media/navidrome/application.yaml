@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: navidrome
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    - repoURL: git@github.com:andrewzn69/infra.git
+      targetRevision: HEAD
+      ref: infra
+    - repoURL: oci://ghcr.io/andrewzn69/app-template
+      targetRevision: 1.0.1
+      path: .
+      helm:
+        releaseName: navidrome
+        valueFiles:
+          - $infra/apps/media/navidrome/values.yaml
+  destination:
+    name: novigrad
+    namespace: media
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

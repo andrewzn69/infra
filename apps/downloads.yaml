@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: downloads
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:andrewzn69/infra.git
+    targetRevision: HEAD
+    path: apps/downloads
+    directory:
+      recurse: true
+      include: "**/{application,applicationset}.yaml"
+  destination:
+    name: vizima
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -17,7 +17,7 @@ spec:
       helm:
         releaseName: radarr
         valueFiles:
-          - $infra/apps/media/radarr/values.yaml
+          - $infra/apps/downloads/radarr/values.yaml
   destination:
     name: novigrad
     namespace: downloads

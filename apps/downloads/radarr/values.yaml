@@ -1,0 +1,84 @@
+namespace: media
+
+components:
+  radarr:
+    image:
+      repository: ghcr.io/home-operations/radarr
+      tag: "6.2"
+      pullPolicy: IfNotPresent
+
+    service:
+      type: ClusterIP
+      port: 7878
+      targetPort: 7878
+      protocol: TCP
+      name: http
+
+    gateway:
+      enabled: true
+      gatewayName: internal
+      gatewayNamespace: gateway-system
+      hostname: radarr.internal.zemn.xyz
+      paths:
+        - path: /
+          pathType: PathPrefix
+
+    volumes:
+      pvc:
+        - name: config
+          mountPath: /config
+          size: 5Gi
+          readOnly: false
+          accessMode: ReadWriteOnce
+          storageClassName: longhorn
+
+      nfs:
+        - name: movies
+          mountPath: /movies
+          server: "100.64.100.10"
+          path: "/storage/media/movies"
+          readOnly: false
+        - name: downloads
+          mountPath: /downloads
+          server: "100.64.100.10"
+          path: "/storage/downloads"
+          readOnly: false
+
+    resources:
+      requests:
+        memory: 192Mi
+        cpu: 25m
+      limits:
+        memory: 384Mi
+        cpu: 200m
+
+    replicaCount: 0
+
+    securityContext:
+      runAsUser: 10001
+      runAsGroup: 10001
+      fsGroup: 10001
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+
+    configMap:
+      enabled: false
+
+    initContainers:
+      fixPermissions:
+        enabled: false
+
+    probes:
+      liveness:
+        enabled: false
+      readiness:
+        enabled: false
+      startup:
+        enabled: false
+
+    metrics:
+      enabled: false

@@ -31,6 +31,10 @@ components:
           accessMode: ReadWriteMany
           storageClassName: longhorn
 
+      emptyDir:
+        - name: tmp
+          mountPath: /tmp
+
     resources:
       requests:
         memory: 192Mi

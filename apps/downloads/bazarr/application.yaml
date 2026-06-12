@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: bazarr
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    - repoURL: git@github.com:andrewzn69/infra.git
+      targetRevision: HEAD
+      ref: infra
+    - repoURL: oci://ghcr.io/andrewzn69/app-template
+      targetRevision: 1.0.1
+      path: .
+      helm:
+        releaseName: bazarr
+        valueFiles:
+          - $infra/apps/downloads/bazarr/values.yaml
+  destination:
+    name: vizima
+    namespace: downloads
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

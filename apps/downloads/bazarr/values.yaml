@@ -1,0 +1,88 @@
+namespace: downloads
+
+components:
+  bazarr:
+    image:
+      repository: ghcr.io/home-operations/bazarr
+      tag: "1.5.6"
+      pullPolicy: IfNotPresent
+
+    service:
+      type: ClusterIP
+      port: 6767
+      targetPort: 6767
+      protocol: TCP
+      name: http
+
+    gateway:
+      enabled: true
+      gatewayName: internal
+      gatewayNamespace: gateway-system
+      hostname: bazarr.internal.zemn.xyz
+      paths:
+        - path: /
+          pathType: PathPrefix
+
+    volumes:
+      pvc:
+        - name: config
+          mountPath: /config
+          size: 5Gi
+          readOnly: false
+          accessMode: ReadWriteOnce
+          storageClassName: longhorn
+
+      nfs:
+        - name: shows
+          mountPath: /tv
+          server: "100.64.100.10"
+          path: "/storage/media/shows"
+          readOnly: false
+        - name: movies
+          mountPath: /movies
+          server: "100.64.100.10"
+          path: "/storage/media/movies"
+          readOnly: false
+
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 25m
+      limits:
+        memory: 512Mi
+        cpu: 200m
+
+    env:
+      - name: TZ
+        value: "Europe/Prague"
+
+    replicaCount: 1
+
+    securityContext:
+      runAsUser: 10001
+      runAsGroup: 10001
+      fsGroup: 10001
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+
+    configMap:
+      enabled: false
+
+    initContainers:
+      fixPermissions:
+        enabled: false
+
+    probes:
+      liveness:
+        enabled: false
+      readiness:
+        enabled: false
+      startup:
+        enabled: false
+
+    metrics:
+      enabled: false

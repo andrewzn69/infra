@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cnpg-cluster
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1" # wait for cnpg-operator to be synced first
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:andrewzn69/infra.git
+    targetRevision: HEAD
+    path: apps/infrastructure/cnpg/cluster
+  destination:
+    name: vizima
+    namespace: database
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

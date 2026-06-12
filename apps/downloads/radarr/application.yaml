@@ -19,7 +19,7 @@ spec:
         valueFiles:
           - $infra/apps/downloads/radarr/values.yaml
   destination:
-    name: novigrad
+    name: vizima
     namespace: downloads
   syncPolicy:
     automated:

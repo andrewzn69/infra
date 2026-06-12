@@ -52,7 +52,7 @@ components:
         memory: 384Mi
         cpu: 200m
 
-    replicaCount: 0
+    replicaCount: 1
 
     securityContext:
       runAsUser: 10001

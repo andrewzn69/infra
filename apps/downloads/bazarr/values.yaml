@@ -44,6 +44,10 @@ components:
           path: "/storage/media/movies"
           readOnly: false
 
+      emptyDir:
+        - name: tmp
+          mountPath: /tmp
+
     resources:
       requests:
         memory: 256Mi

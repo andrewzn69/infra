@@ -44,6 +44,10 @@ components:
           path: "/storage/downloads"
           readOnly: false
 
+      emptyDir:
+        - name: tmp
+          mountPath: /tmp
+
     resources:
       requests:
         memory: 192Mi

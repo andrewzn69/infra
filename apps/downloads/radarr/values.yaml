@@ -92,7 +92,7 @@ components:
       - name: RADARR__LOG__DBENABLED
         value: "False"
 
-    replicaCount: 0
+    replicaCount: 1
 
     securityContext:
       runAsUser: 10001

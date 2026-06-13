@@ -1,5 +1,19 @@
 namespace: downloads
 
+secrets:
+  enabled: true
+  type: infisical
+  infisical:
+    hostAPI: https://eu.infisical.com
+    projectSlug: vizima
+    envSlug: prod
+    secretsPath: "/downloads/prowlarr"
+    auth:
+      credentialsSecretName: infisical-universal-auth
+      credentialsSecretNamespace: infisical-system
+    managedSecret:
+      creationPolicy: Owner
+
 components:
   prowlarr:
     image:
@@ -46,6 +60,24 @@ components:
     env:
       - name: TZ
         value: "Europe/Prague"
+      - name: PROWLARR__POSTGRES__HOST
+        value: "postgres-rw.database.svc.cluster.local"
+      - name: PROWLARR__POSTGRES__PORT
+        value: "5432"
+      - name: PROWLARR__POSTGRES__MAINDB
+        value: "prowlarr"
+      - name: PROWLARR__POSTGRES__USER
+        valueFrom:
+          secretKeyRef:
+            name: prowlarr
+            key: username
+      - name: PROWLARR__POSTGRES__PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: prowlarr
+            key: password
+      - name: PROWLARR__LOG__DBENABLED
+        value: "False"
 
     replicaCount: 0
 

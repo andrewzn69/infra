@@ -13,6 +13,8 @@ spec:
     repoURL: git@github.com:andrewzn69/infra.git
     targetRevision: HEAD
     path: apps/infrastructure/cnpg/cluster
+    directory:
+      recurse: true
   destination:
     name: vizima
     namespace: database

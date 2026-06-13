@@ -19,7 +19,7 @@ spec:
         valueFiles:
           - $infra/apps/media/navidrome/values.yaml
   destination:
-    name: novigrad
+    name: vizima
     namespace: media
   syncPolicy:
     automated:

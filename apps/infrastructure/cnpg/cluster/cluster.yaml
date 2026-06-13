@@ -10,8 +10,28 @@ spec:
     storageClass: longhorn-cnpg
   managed:
     roles:
+      - name: bazarr
+        ensure: present
+        login: true
+        passwordSecret:
+          name: pg-role-bazarr
+      - name: lidarr
+        ensure: present
+        login: true
+        passwordSecret:
+          name: pg-role-lidarr
       - name: prowlarr
         ensure: present
         login: true
         passwordSecret:
           name: pg-role-prowlarr
+      - name: radarr
+        ensure: present
+        login: true
+        passwordSecret:
+          name: pg-role-radarr
+      - name: sonarr
+        ensure: present
+        login: true
+        passwordSecret:
+          name: pg-role-sonarr

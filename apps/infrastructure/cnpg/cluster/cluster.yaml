@@ -8,3 +8,10 @@ spec:
   storage:
     size: 5Gi
     storageClass: longhorn-cnpg
+  managed:
+    roles:
+      - name: prowlarr
+        ensure: present
+        login: true
+        passwordSecret:
+          name: pg-role-prowlarr

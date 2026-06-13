@@ -1,5 +1,19 @@
 namespace: downloads
 
+secrets:
+  enabled: true
+  type: infisical
+  infisical:
+    hostAPI: https://eu.infisical.com
+    projectSlug: vizima
+    envSlug: prod
+    secretsPath: "/downloads/radarr"
+    auth:
+      credentialsSecretName: infisical-universal-auth
+      credentialsSecretNamespace: infisical-system
+    managedSecret:
+      creationPolicy: Owner
+
 components:
   radarr:
     image:
@@ -55,6 +69,28 @@ components:
       limits:
         memory: 384Mi
         cpu: 200m
+
+    env:
+      - name: TZ
+        value: "Europe/Prague"
+      - name: RADARR__POSTGRES__HOST
+        value: "postgres-rw.database.svc.cluster.local"
+      - name: RADARR__POSTGRES__PORT
+        value: "5432"
+      - name: RADARR__POSTGRES__MAINDB
+        value: "radarr"
+      - name: RADARR__POSTGRES__USER
+        valueFrom:
+          secretKeyRef:
+            name: radarr
+            key: username
+      - name: RADARR__POSTGRES__PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: radarr
+            key: password
+      - name: RADARR__LOG__DBENABLED
+        value: "False"
 
     replicaCount: 0
 

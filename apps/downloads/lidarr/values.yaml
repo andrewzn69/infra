@@ -1,5 +1,19 @@
 namespace: downloads
 
+secrets:
+  enabled: true
+  type: infisical
+  infisical:
+    hostAPI: https://eu.infisical.com
+    projectSlug: vizima
+    envSlug: prod
+    secretsPath: "/downloads/lidarr"
+    auth:
+      credentialsSecretName: infisical-universal-auth
+      credentialsSecretNamespace: infisical-system
+    managedSecret:
+      creationPolicy: Owner
+
 components:
   lidarr:
     image:
@@ -59,6 +73,24 @@ components:
     env:
       - name: TZ
         value: "Europe/Prague"
+      - name: LIDARR__POSTGRES__HOST
+        value: "postgres-rw.database.svc.cluster.local"
+      - name: LIDARR__POSTGRES__PORT
+        value: "5432"
+      - name: LIDARR__POSTGRES__MAINDB
+        value: "lidarr"
+      - name: LIDARR__POSTGRES__USER
+        valueFrom:
+          secretKeyRef:
+            name: lidarr
+            key: username
+      - name: LIDARR__POSTGRES__PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: lidarr
+            key: password
+      - name: LIDARR__LOG__DBENABLED
+        value: "False"
 
     replicaCount: 0
 

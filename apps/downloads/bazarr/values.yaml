@@ -1,5 +1,19 @@
 namespace: downloads
 
+secrets:
+  enabled: true
+  type: infisical
+  infisical:
+    hostAPI: https://eu.infisical.com
+    projectSlug: vizima
+    envSlug: prod
+    secretsPath: "/downloads/bazarr"
+    auth:
+      credentialsSecretName: infisical-universal-auth
+      credentialsSecretNamespace: infisical-system
+    managedSecret:
+      creationPolicy: Owner
+
 components:
   bazarr:
     image:
@@ -59,6 +73,24 @@ components:
     env:
       - name: TZ
         value: "Europe/Prague"
+      - name: POSTGRES_ENABLED
+        value: "True"
+      - name: POSTGRES_HOST
+        value: "postgres-rw.database.svc.cluster.local"
+      - name: POSTGRES_PORT
+        value: "5432"
+      - name: POSTGRES_DATABASE
+        value: "bazarr"
+      - name: POSTGRES_USERNAME
+        valueFrom:
+          secretKeyRef:
+            name: bazarr
+            key: username
+      - name: POSTGRES_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: bazarr
+            key: password
 
     replicaCount: 0
 

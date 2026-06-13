@@ -1,5 +1,19 @@
 namespace: downloads
 
+secrets:
+  enabled: true
+  type: infisical
+  infisical:
+    hostAPI: https://eu.infisical.com
+    projectSlug: vizima
+    envSlug: prod
+    secretsPath: "/downloads/sonarr"
+    auth:
+      credentialsSecretName: infisical-universal-auth
+      credentialsSecretNamespace: infisical-system
+    managedSecret:
+      creationPolicy: Owner
+
 components:
   sonarr:
     image:
@@ -59,6 +73,24 @@ components:
     env:
       - name: TZ
         value: "Europe/Prague"
+      - name: SONARR__POSTGRES__HOST
+        value: "postgres-rw.database.svc.cluster.local"
+      - name: SONARR__POSTGRES__PORT
+        value: "5432"
+      - name: SONARR__POSTGRES__MAINDB
+        value: "sonarr"
+      - name: SONARR__POSTGRES__USER
+        valueFrom:
+          secretKeyRef:
+            name: sonarr
+            key: username
+      - name: SONARR__POSTGRES__PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: sonarr
+            key: password
+      - name: SONARR__LOG__DBENABLED
+        value: "False"
 
     replicaCount: 0
 

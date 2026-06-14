@@ -20,6 +20,11 @@ spec:
         login: true
         passwordSecret:
           name: pg-role-lidarr
+      - name: materialious
+        ensure: present
+        login: true
+        passwordSecret:
+          name: pg-role-materialious
       - name: prowlarr
         ensure: present
         login: true

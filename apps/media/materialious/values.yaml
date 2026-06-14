@@ -18,7 +18,7 @@ components:
       enabled: true
       gatewayName: internal
       gatewayNamespace: gateway-system
-      hostname: yt.zemn.xyz
+      hostname: yt.internal.zemn.xyz
       paths:
         - path: /
           pathType: PathPrefix

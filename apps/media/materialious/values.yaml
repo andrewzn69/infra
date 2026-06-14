@@ -1,16 +1,30 @@
 namespace: media
 
+secrets:
+  enabled: true
+  type: infisical
+  infisical:
+    hostAPI: https://eu.infisical.com
+    projectSlug: vizima
+    envSlug: prod
+    secretsPath: "/media/materialious"
+    auth:
+      credentialsSecretName: infisical-universal-auth
+      credentialsSecretNamespace: infisical-system
+    managedSecret:
+      creationPolicy: Owner
+
 components:
   materialious:
     image:
-      repository: docker.io/wardpearce/materialious
+      repository: docker.io/wardpearce/materialious-full
       tag: "1.16.31"
       pullPolicy: IfNotPresent
 
     service:
       type: ClusterIP
-      port: 80
-      targetPort: 80
+      port: 3000
+      targetPort: 3000
       protocol: TCP
       name: http
 
@@ -34,33 +48,56 @@ components:
 
     resources:
       requests:
-        memory: 32Mi
-        cpu: 10m
-      limits:
         memory: 128Mi
-        cpu: 200m
+        cpu: 50m
+      limits:
+        memory: 512Mi
+        cpu: 500m
 
     env:
-      - name: VITE_DEFAULT_INVIDIOUS_INSTANCE
+      - name: TZ
+        value: "Europe/Prague"
+      - name: COOKIE_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: materialious
+            key: cookie_secret
+      - name: DATABASE_CONNECTION_URI
+        valueFrom:
+          secretKeyRef:
+            name: materialious
+            key: database_connection_uri
+      - name: PUBLIC_INTERNAL_AUTH
+        value: "true"
+      - name: PUBLIC_REQUIRE_AUTH
+        value: "true"
+      - name: PUBLIC_REGISTRATION_ALLOWED
+        value: "false"
+      - name: PUBLIC_ADMIN_USERNAMES
+        value: ""
+      - name: PUBLIC_DEFAULT_INVIDIOUS_INSTANCE
         value: "https://invidious.materialio.us"
-      - name: VITE_DEFAULT_COMPANION_INSTANCE
-        value: "https://companion.materialio.us"
-      - name: VITE_DEFAULT_RETURNYTDISLIKES_INSTANCE
+      - name: PUBLIC_DEFAULT_RETURNYTDISLIKES_INSTANCE
         value: "https://returnyoutubedislikeapi.com"
-      - name: VITE_DEFAULT_SPONSERBLOCK_INSTANCE
+      - name: PUBLIC_DEFAULT_SPONSERBLOCK_INSTANCE
         value: "https://sponsor.ajay.app"
-      - name: VITE_DEFAULT_DEARROW_INSTANCE
+      - name: PUBLIC_DEFAULT_DEARROW_INSTANCE
         value: "https://sponsor.ajay.app"
-      - name: VITE_DEFAULT_DEARROW_THUMBNAIL_INSTANCE
+      - name: PUBLIC_DEFAULT_DEARROW_THUMBNAIL_INSTANCE
         value: "https://dearrow-thumb.ajay.app"
 
     replicaCount: 1
 
     securityContext:
+      runAsUser: 10001
+      runAsGroup: 10001
+      fsGroup: 10001
+      runAsNonRoot: true
       allowPrivilegeEscalation: false
-      readOnlyRootFilesystem: false
-      seccompProfile:
-        type: RuntimeDefault
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
 
     configMap:
       enabled: false

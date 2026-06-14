@@ -62,7 +62,7 @@ components:
       fsGroup: 10001
       runAsNonRoot: true
       allowPrivilegeEscalation: false
-      readOnlyRootFilesystem: true
+      readOnlyRootFilesystem: false
       capabilities:
         drop:
           - ALL

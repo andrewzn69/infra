@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: materialious
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    - repoURL: git@github.com:andrewzn69/infra.git
+      targetRevision: HEAD
+      ref: infra
+    - repoURL: oci://ghcr.io/andrewzn69/app-template
+      targetRevision: 1.0.2
+      path: .
+      helm:
+        releaseName: materialious
+        valueFiles:
+          - $infra/apps/media/materialious/values.yaml
+  destination:
+    name: vizima
+    namespace: media
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

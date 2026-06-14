@@ -1,0 +1,86 @@
+namespace: media
+
+components:
+  materialious:
+    image:
+      repository: docker.io/wardpearce/materialious
+      tag: "1.16.31"
+      pullPolicy: IfNotPresent
+
+    service:
+      type: ClusterIP
+      port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+
+    gateway:
+      enabled: true
+      gatewayName: internal
+      gatewayNamespace: gateway-system
+      hostname: yt.zemn.xyz
+      paths:
+        - path: /
+          pathType: PathPrefix
+
+    volumes:
+      emptyDir:
+        - name: tmp
+          mountPath: /tmp
+        - name: nginx-cache
+          mountPath: /var/cache/nginx
+        - name: nginx-run
+          mountPath: /run
+
+    resources:
+      requests:
+        memory: 32Mi
+        cpu: 10m
+      limits:
+        memory: 128Mi
+        cpu: 200m
+
+    env:
+      - name: VITE_DEFAULT_INVIDIOUS_INSTANCE
+        value: "https://invidious.materialio.us"
+      - name: VITE_DEFAULT_COMPANION_INSTANCE
+        value: "https://companion.materialio.us"
+      - name: VITE_DEFAULT_RETURNYTDISLIKES_INSTANCE
+        value: "https://returnyoutubedislikeapi.com"
+      - name: VITE_DEFAULT_SPONSERBLOCK_INSTANCE
+        value: "https://sponsor.ajay.app"
+      - name: VITE_DEFAULT_DEARROW_INSTANCE
+        value: "https://sponsor.ajay.app"
+      - name: VITE_DEFAULT_DEARROW_THUMBNAIL_INSTANCE
+        value: "https://dearrow-thumb.ajay.app"
+
+    replicaCount: 1
+
+    securityContext:
+      runAsUser: 10001
+      runAsGroup: 10001
+      fsGroup: 10001
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+
+    configMap:
+      enabled: false
+
+    initContainers:
+      fixPermissions:
+        enabled: false
+
+    probes:
+      liveness:
+        enabled: false
+      readiness:
+        enabled: false
+      startup:
+        enabled: false
+
+    metrics:
+      enabled: false

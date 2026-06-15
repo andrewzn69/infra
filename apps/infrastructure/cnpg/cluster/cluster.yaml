@@ -15,6 +15,11 @@ spec:
         login: true
         passwordSecret:
           name: pg-role-bazarr
+      - name: invidious
+        ensure: present
+        login: true
+        passwordSecret:
+          name: pg-role-invidious
       - name: lidarr
         ensure: present
         login: true

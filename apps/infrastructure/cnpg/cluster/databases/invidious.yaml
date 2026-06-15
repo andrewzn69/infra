@@ -1,0 +1,10 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: invidious
+  namespace: database
+spec:
+  name: invidious
+  owner: invidious
+  cluster:
+    name: postgres

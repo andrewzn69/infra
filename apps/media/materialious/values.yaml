@@ -76,7 +76,7 @@ components:
       - name: PUBLIC_ADMIN_USERNAMES
         value: ""
       - name: PUBLIC_DEFAULT_INVIDIOUS_INSTANCE
-        value: "https://invidious.materialio.us"
+        value: "https://invidious.internal.zemn.xyz"
       - name: PUBLIC_DEFAULT_RETURNYTDISLIKES_INSTANCE
         value: "https://returnyoutubedislikeapi.com"
       - name: PUBLIC_DEFAULT_SPONSERBLOCK_INSTANCE

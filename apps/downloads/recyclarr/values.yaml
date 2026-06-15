@@ -79,9 +79,16 @@ components:
                 type: movie
 
               quality_profiles:
-                - trash_id: d1d67249d3890e49bc12e275d989a7e9  # hd bluray + web
+                - name: SQP-1 (1080p)
+                  trash_id: 0896c29d74de619df168d23b98104b22
                   reset_unmatched_scores:
                     enabled: true
+                  qualities:
+                    - name: Bluray|WEB-1080p
+                      qualities:
+                        - Bluray-1080p
+                        - WEBRip-1080p
+                        - WEBDL-1080p
 
               media_naming:
                 folder: jellyfin-tmdb

@@ -1,0 +1,183 @@
+namespace: media
+
+secrets:
+  enabled: true
+  type: infisical
+  infisical:
+    hostAPI: https://eu.infisical.com
+    projectSlug: vizima
+    envSlug: prod
+    secretsPath: "/media/invidious"
+    auth:
+      credentialsSecretName: infisical-universal-auth
+      credentialsSecretNamespace: infisical-system
+    managedSecret:
+      creationPolicy: Owner
+
+components:
+  core:
+    image:
+      repository: quay.io/invidious/invidious
+      tag: "2026.06.09-6dec63a"
+      pullPolicy: IfNotPresent
+
+    service:
+      type: ClusterIP
+      port: 3000
+      targetPort: 3000
+      protocol: TCP
+      name: http
+
+    gateway:
+      enabled: true
+      gatewayName: internal
+      gatewayNamespace: gateway-system
+      hostname: invidious.internal.zemn.xyz
+      paths:
+        - path: /
+          pathType: PathPrefix
+
+    volumes:
+      emptyDir:
+        - name: tmp
+          mountPath: /tmp
+
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 100m
+      limits:
+        memory: 512Mi
+        cpu: 1000m
+
+    env:
+      - name: TZ
+        value: "Europe/Prague"
+      - name: INVIDIOUS_DATABASE_URL
+        valueFrom:
+          secretKeyRef:
+            name: invidious
+            key: database_url
+      - name: INVIDIOUS_HMAC_KEY
+        valueFrom:
+          secretKeyRef:
+            name: invidious
+            key: hmac_key
+      - name: INVIDIOUS_INVIDIOUS_COMPANION_KEY
+        valueFrom:
+          secretKeyRef:
+            name: invidious
+            key: companion_key
+      - name: INVIDIOUS_CHECK_TABLES
+        value: "true"
+      - name: INVIDIOUS_DOMAIN
+        value: "invidious.internal.zemn.xyz"
+      - name: INVIDIOUS_HTTPS_ONLY
+        value: "true"
+      - name: INVIDIOUS_EXTERNAL_PORT
+        value: "443"
+      - name: INVIDIOUS_REGISTRATION_ENABLED
+        value: "false"
+      - name: INVIDIOUS_LOGIN_ENABLED
+        value: "false"
+      - name: INVIDIOUS_STATISTICS_ENABLED
+        value: "false"
+      - name: INVIDIOUS_INVIDIOUS_COMPANION
+        value: '[{private_url: "http://invidious-companion.media.svc.cluster.local:8282/companion"}]'
+
+    replicaCount: 1
+
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+
+    configMap:
+      enabled: false
+
+    initContainers:
+      fixPermissions:
+        enabled: false
+
+    probes:
+      liveness:
+        enabled: false
+      readiness:
+        enabled: false
+      startup:
+        enabled: false
+
+    metrics:
+      enabled: false
+
+  companion:
+    image:
+      repository: quay.io/invidious/invidious-companion
+      tag: "latest"
+      pullPolicy: IfNotPresent
+
+    service:
+      type: ClusterIP
+      port: 8282
+      targetPort: 8282
+      protocol: TCP
+      name: http
+
+    volumes:
+      emptyDir:
+        - name: cache
+          mountPath: /var/tmp/youtubei.js
+
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 100m
+      limits:
+        memory: 1Gi
+        cpu: 1000m
+
+    env:
+      - name: TZ
+        value: "Europe/Prague"
+      - name: SERVER_SECRET_KEY
+        valueFrom:
+          secretKeyRef:
+            name: invidious
+            key: companion_key
+
+    replicaCount: 1
+
+    securityContext:
+      runAsUser: 10001
+      runAsGroup: 65534
+      fsGroup: 65534
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+
+    configMap:
+      enabled: false
+
+    initContainers:
+      fixPermissions:
+        enabled: false
+
+    probes:
+      liveness:
+        enabled: false
+      readiness:
+        enabled: false
+      startup:
+        enabled: false
+
+    metrics:
+      enabled: false

@@ -84,10 +84,10 @@ components:
                     enabled: true
 
               media_naming:
-                folder: "{Movie Title} ({Release Year})"
+                folder: jellyfin-tmdb
                 movie:
                   rename: true
-                  standard: "{Movie Title} ({Release Year})"
+                  standard: jellyfin-tmdb
 
           sonarr:
             series:
@@ -103,11 +103,11 @@ components:
                     enabled: true
 
               media_naming:
-                series: "{Series Title}"
-                season: "Season {season}"
+                series: jellyfin-tvdb
+                season: default
                 episodes:
                   rename: true
-                  standard: "{Series Title} S{season:00}E{episode:00}"
+                  standard: default
 
     replicaCount: 1
 

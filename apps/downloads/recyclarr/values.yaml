@@ -83,6 +83,12 @@ components:
                   reset_unmatched_scores:
                     enabled: true
 
+              media_naming:
+                folder: "{Movie Title} ({Release Year})"
+                movie:
+                  rename: true
+                  standard: "{Movie Title} ({Release Year})"
+
           sonarr:
             series:
               base_url: http://sonarr.downloads.svc.cluster.local:8989
@@ -95,6 +101,13 @@ components:
                 - trash_id: 72dae194fc92bf828f32cde7744e51a1  # web-1080p
                   reset_unmatched_scores:
                     enabled: true
+
+              media_naming:
+                series: "{Series Title}"
+                season: "Season {season}"
+                episodes:
+                  rename: true
+                  standard: "{Series Title} S{season:00}E{episode:00}"
 
     replicaCount: 1
 

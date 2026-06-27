@@ -1,5 +1,6 @@
 defaultSettings:
   defaultDataPath: /var/mnt/data/longhorn
+  guaranteedInstanceManagerCpu: "12"
 persistence:
   defaultClassReplicaCount: 3
 preUpgradeChecker:

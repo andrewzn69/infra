@@ -65,10 +65,9 @@ components:
     resources:
       requests:
         memory: 256Mi
-        cpu: 25m
+        cpu: 15m
       limits:
         memory: 512Mi
-        cpu: 200m
 
     env:
       - name: TZ

@@ -85,7 +85,7 @@ components:
       - name: INVIDIOUS_INVIDIOUS_COMPANION
         value: '[{private_url: "http://invidious-companion.media.svc.cluster.local:8282/companion"}]'
 
-    replicaCount: 1
+    replicaCount: 0
 
     securityContext:
       runAsUser: 1000

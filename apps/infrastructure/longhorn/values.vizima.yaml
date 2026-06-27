@@ -1,6 +1,7 @@
 defaultSettings:
   defaultDataPath: /var/mnt/data/longhorn
   guaranteedInstanceManagerCpu: "12"
+  concurrentReplicaRebuildPerNodeLimit: "2"
 persistence:
   defaultClassReplicaCount: 3
 preUpgradeChecker:

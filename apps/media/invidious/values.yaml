@@ -151,7 +151,7 @@ components:
             name: invidious
             key: companion_key
 
-    replicaCount: 1
+    replicaCount: 0
 
     securityContext:
       runAsUser: 10001

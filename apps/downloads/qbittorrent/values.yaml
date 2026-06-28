@@ -21,6 +21,14 @@ components:
       tag: "5.1.4"
       pullPolicy: IfNotPresent
 
+    podSecurityContext:
+      fsGroup: 10001
+      seccompProfile:
+        type: RuntimeDefault
+      sysctls:
+        - name: net.ipv4.conf.all.src_valid_mark
+          value: "1"
+
     service:
       type: ClusterIP
       port: 8080

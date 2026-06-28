@@ -55,7 +55,7 @@ components:
         - name: downloads
           mountPath: /downloads
           server: "100.64.100.10"
-          path: "/storage/downloads"
+          path: "/storage/downloads/qbittorrent"
           readOnly: false
 
       emptyDir:

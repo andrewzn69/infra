@@ -21,14 +21,6 @@ components:
       tag: "5.1.4"
       pullPolicy: IfNotPresent
 
-    podSecurityContext:
-      fsGroup: 10001
-      seccompProfile:
-        type: RuntimeDefault
-      sysctls:
-        - name: net.ipv4.conf.all.src_valid_mark
-          value: "1"
-
     service:
       type: ClusterIP
       port: 8080
@@ -129,4 +121,6 @@ components:
             - name: FIREWALL_INPUT_PORTS
               value: "8080" # lets the cluster reach qbittorrent web ui
             - name: FIREWALL_OUTBOUND_SUBNETS
-              value: "10.244.0.0/16,10.96.0.0/12" # allow cluster-internal traffic
+              value: "10.244.0.0/16,10.96.0.0/12"
+            - name: WIREGUARD_IMPLEMENTATION
+              value: userspace # allow cluster-internal traffic

@@ -77,7 +77,6 @@ components:
     securityContext:
       runAsUser: 10001
       runAsGroup: 10001
-      fsGroup: 10001
       runAsNonRoot: true
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true

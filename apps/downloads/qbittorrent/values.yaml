@@ -135,7 +135,7 @@ components:
               value: userspace
             # pod network MTU is reduced by cilium encapsulation - cap inner tunnel MTU to avoid sendmmsg: message too long
             - name: WIREGUARD_MTU
-              value: "1280"
+              value: "1220"
             # pin ipv4 endpoint - pods have no ipv6, gluetun would otherwise pick ipv6 mullvad servers and fail
             - name: WIREGUARD_ENDPOINT_IP
               valueFrom:

@@ -134,8 +134,9 @@ components:
             - name: WIREGUARD_IMPLEMENTATION
               value: userspace
             # pod network MTU is reduced by cilium encapsulation - cap inner tunnel MTU to avoid sendmmsg: message too long
+            # 1280 (eth0) - 60 (wg ipv4 overhead) = 1220, but wireguard-go gso batching needs extra headroom
             - name: WIREGUARD_MTU
-              value: "1220"
+              value: "1200"
             # only route ipv4 through the tunnel - pods have no ipv6, ::/0 route causes setup failure
             - name: WIREGUARD_ALLOWED_IPS
               value: "0.0.0.0/0"

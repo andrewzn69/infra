@@ -50,14 +50,6 @@ components:
           server: "100.64.100.10"
           path: "/storage/downloads/qbittorrent"
           readOnly: false
-      hostPath:
-        # gluetun userspace wireguard needs /dev/net/tun to create the tunnel interface.
-        # kernelspace wireguard requires net.ipv4.conf.all.src_valid_mark=1 sysctl (node-wide, unsafe).
-        # namespace is labeled privileged to allow NET_ADMIN for gluetun.
-        - name: dev-net-tun
-          mountPath: /dev/net/tun
-          path: /dev/net/tun
-          type: CharDevice
 
     resources:
       requests:
@@ -130,13 +122,13 @@ components:
             # allow qbittorrent to reach cluster-internal services (pods + services) through the vpn firewall
             - name: FIREWALL_OUTBOUND_SUBNETS
               value: "10.244.0.0/16,10.96.0.0/12"
-            # userspace avoids the src_valid_mark sysctl required by kernelspace wireguard
+            # kernelspace uses wgctrl/netlink directly - no wireguard-go, no gso/sendmmsg issues
+            # does not need src_valid_mark sysctl (only wg-quick needs it, not wgctrl)
             - name: WIREGUARD_IMPLEMENTATION
-              value: userspace
-            # pod network MTU is reduced by cilium encapsulation - cap inner tunnel MTU to avoid sendmmsg: message too long
-            # 1280 (eth0) - 60 (wg ipv4 overhead) = 1220, but wireguard-go gso batching needs extra headroom
+              value: kernelspace
+            # kernel module handles segmentation correctly, higher mtu is safe
             - name: WIREGUARD_MTU
-              value: "1200"
+              value: "1320"
             # only route ipv4 through the tunnel - pods have no ipv6, ::/0 route causes setup failure
             - name: WIREGUARD_ALLOWED_IPS
               value: "0.0.0.0/0"
@@ -151,6 +143,3 @@ components:
                 secretKeyRef:
                   name: qbittorrent
                   key: WIREGUARD_ENDPOINT_PORT
-          volumeMounts:
-            - name: dev-net-tun
-              mountPath: /dev/net/tun

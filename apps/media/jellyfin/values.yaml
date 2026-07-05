@@ -7,7 +7,7 @@ components:
       tag: "10.11.8"
       pullPolicy: IfNotPresent
 
-    replicaCount: 0
+    replicaCount: 1
 
     service:
       type: ClusterIP

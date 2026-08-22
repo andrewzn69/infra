@@ -4,6 +4,13 @@ defaultSettings:
   concurrentReplicaRebuildPerNodeLimit: "2"
   engineImagePodLivenessProbeTimeout: "30"
   engineImagePodLivenessProbePeriod: "60"
+longhornManager:
+  # without a request the manager runs BestEffort, gets starved on a busy node,
+  # and its readiness probe timing out makes longhorn mark the node down
+  resources:
+    requests:
+      cpu: 50m
+      memory: 320Mi
 persistence:
   defaultClassReplicaCount: 3
 preUpgradeChecker:

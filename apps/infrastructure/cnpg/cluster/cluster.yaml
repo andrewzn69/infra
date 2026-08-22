@@ -13,7 +13,6 @@ spec:
       cpu: 100m
       memory: 1Gi
     limits:
-      cpu: 100m
       memory: 1Gi
   managed:
     roles:

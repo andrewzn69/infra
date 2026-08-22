@@ -8,6 +8,13 @@ spec:
   storage:
     size: 30Gi
     storageClass: longhorn-cnpg
+  resources:
+    requests:
+      cpu: 100m
+      memory: 1Gi
+    limits:
+      cpu: 100m
+      memory: 1Gi
   managed:
     roles:
       - name: bazarr

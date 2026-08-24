@@ -1,6 +1,11 @@
 server:
   retentionPeriod: 90d
 
+  extraArgs:
+    # otlp names arrive dotted (container.memory.usage) with dotted labels too.
+    # this converts both to prometheus style so promql and dashboards work
+    opentelemetry.usePrometheusNaming: "true"
+
   persistentVolume:
     storageClassName: longhorn
     size: 10Gi

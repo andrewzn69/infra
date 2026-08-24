@@ -1,0 +1,13 @@
+server:
+  retentionPeriod: 7d
+
+  persistentVolume:
+    storageClassName: longhorn
+    size: 2Gi
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 512Mi

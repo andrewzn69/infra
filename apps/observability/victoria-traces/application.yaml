@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: victoria-traces
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    - repoURL: git@github.com:andrewzn69/infra.git
+      targetRevision: HEAD
+      ref: infra
+    - repoURL: https://victoriametrics.github.io/helm-charts
+      chart: victoria-traces-single
+      targetRevision: 0.1.11
+      helm:
+        releaseName: victoria-traces
+        valueFiles:
+          - $infra/apps/observability/victoria-traces/values.yaml
+  destination:
+    name: vizima
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

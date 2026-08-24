@@ -42,7 +42,7 @@ components:
         - name: config
           mountPath: /config
           size: 2Gi
-          accessMode: ReadWriteMany
+          accessMode: ReadWriteOnce
           storageClassName: longhorn
 
       emptyDir:

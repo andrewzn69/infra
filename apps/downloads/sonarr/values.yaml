@@ -161,6 +161,8 @@ components:
           secretKeyRef:
             name: sonarr
             key: API_KEY
+      - name: ENABLE_ADDITIONAL_METRICS
+        value: "true"
 
     replicaCount: 1
 

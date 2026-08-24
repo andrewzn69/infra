@@ -1,0 +1,49 @@
+mode: daemonset
+
+image:
+  repository: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-k8s
+command:
+  name: otelcol-k8s
+
+presets:
+  logsCollection:
+    enabled: true
+    storeCheckpoints: true
+  kubernetesAttributes:
+    enabled: true
+
+config:
+  receivers:
+    jaeger: null
+    zipkin: null
+    prometheus: null
+    otlp: null
+  exporters:
+    debug: null
+    otlphttp:
+      endpoint: http://loki.observability.svc.cluster.local:3100/otlp
+      sending_queue:
+        enabled: true
+        storage: file_storage
+      retry_on_failure:
+        enabled: true
+  service:
+    pipelines:
+      traces: null
+      metrics: null
+      logs:
+        receivers: [filelog]
+        processors: [memory_limiter, k8sattributes, batch]
+        exporters: [otlphttp]
+
+tolerations:
+  - key: node-role.kubernetes.io/control-plane
+    operator: Exists
+    effect: NoSchedule
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    memory: 256Mi

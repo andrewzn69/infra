@@ -20,6 +20,8 @@ config:
     zipkin: null
     prometheus: null
     otlp: null
+    kubeletstats:
+      insecure_skip_verify: true
   exporters:
     debug: null
     otlphttp:

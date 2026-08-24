@@ -63,7 +63,7 @@ resources:
     cpu: 50m
     memory: 128Mi
   limits:
-    memory: 512Mi
+    memory: 1Gi
 
 extraObjects:
   - apiVersion: secrets.infisical.com/v1alpha1

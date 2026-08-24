@@ -5,6 +5,12 @@ image:
 command:
   name: otelcol-k8s
 
+clusterRole:
+  rules:
+    - apiGroups: [""]
+      resources: ["nodes/metrics"]
+      verbs: ["get"]
+
 presets:
   logsCollection:
     enabled: true
@@ -25,6 +31,20 @@ config:
     prometheus:
       config:
         scrape_configs:
+          # cadvisor is built into the kubelet, on its authenticated port
+          # K8S_NODE_IP is per-pod, so each agent scrapes only its own node
+          - job_name: cadvisor
+            scheme: https
+            metrics_path: /metrics/cadvisor
+            scrape_interval: 60s
+            authorization:
+              credentials_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+            tls_config:
+              insecure_skip_verify: true
+            static_configs:
+              - targets: ["${env:K8S_NODE_IP}:10250"]
+                labels:
+                  node: "${env:K8S_NODE_NAME}"
           - job_name: exportarr
             scrape_interval: 180s
             scrape_timeout: 120s
@@ -72,6 +92,8 @@ config:
                 target_label: app
     kubeletstats:
       insecure_skip_verify: true
+      # cadvisor covers container and pod, avoid emitting both
+      metric_groups: [node]
   exporters:
     debug: null
     otlphttp:

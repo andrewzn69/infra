@@ -41,7 +41,7 @@ components:
       pvc:
         - name: config
           mountPath: /config
-          size: 5Gi
+          size: 2Gi
           accessMode: ReadWriteMany
           storageClassName: longhorn
 

@@ -37,6 +37,11 @@ datasources:
         uid: loki
         url: http://loki.observability.svc.cluster.local:3100
         access: proxy
+      - name: VictoriaTraces
+        type: jaeger
+        uid: victoriatraces
+        url: http://victoria-traces-vt-single-server.observability.svc.cluster.local:10428/select/jaeger
+        access: proxy
 
 route:
   main:

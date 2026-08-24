@@ -11,6 +11,8 @@ presets:
     storeCheckpoints: true
   kubernetesAttributes:
     enabled: true
+  kubeletMetrics:
+    enabled: true
 
 config:
   receivers:
@@ -27,10 +29,20 @@ config:
         storage: file_storage
       retry_on_failure:
         enabled: true
+    otlphttp/victoriametrics:
+      metrics_endpoint: http://victoria-metrics-victoria-metrics-single-server.observability.svc.cluster.local:8428/opentelemetry/v1/metrics
+      sending_queue:
+        enabled: true
+        storage: file_storage
+      retry_on_failure:
+        enabled: true
   service:
     pipelines:
       traces: null
-      metrics: null
+      metrics:
+        receivers: [kubeletstats]
+        processors: [memory_limiter, k8sattributes, batch]
+        exporters: [otlphttp/victoriametrics]
       logs:
         receivers: [filelog]
         processors: [memory_limiter, k8sattributes, batch]

@@ -45,6 +45,21 @@ config:
               - targets: ["${env:K8S_NODE_IP}:10250"]
                 labels:
                   node: "${env:K8S_NODE_NAME}"
+          - job_name: longhorn
+            scrape_interval: 60s
+            kubernetes_sd_configs:
+              - role: pod
+                selectors:
+                  - role: pod
+                    field: spec.nodeName=${env:K8S_NODE_NAME}
+            relabel_configs:
+              - source_labels: [__meta_kubernetes_pod_label_app]
+                action: keep
+                regex: longhorn-manager
+              # pod also exposes webhook and recovery ports
+              - source_labels: [__meta_kubernetes_pod_container_port_name]
+                action: keep
+                regex: manager
           - job_name: exportarr
             scrape_interval: 180s
             scrape_timeout: 120s

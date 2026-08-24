@@ -115,7 +115,7 @@ components:
                   rename: true
                   standard: default
 
-    replicaCount: 0
+    replicaCount: 1
 
     securityContext:
       runAsUser: 10001

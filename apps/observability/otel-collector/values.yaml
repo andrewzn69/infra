@@ -14,12 +14,15 @@ presets:
   kubeletMetrics:
     enabled: true
 
+# daemonset mode has no service unless asked - apps need one to push traces
+service:
+  enabled: true
+
 config:
   receivers:
     jaeger: null
     zipkin: null
     prometheus: null
-    otlp: null
     kubeletstats:
       insecure_skip_verify: true
   exporters:
@@ -38,9 +41,19 @@ config:
         storage: file_storage
       retry_on_failure:
         enabled: true
+    otlphttp/victoriatraces:
+      traces_endpoint: http://victoria-traces-vt-single-server.observability.svc.cluster.local:10428/insert/opentelemetry/v1/traces
+      sending_queue:
+        enabled: true
+        storage: file_storage
+      retry_on_failure:
+        enabled: true
   service:
     pipelines:
-      traces: null
+      traces:
+        receivers: [otlp]
+        processors: [memory_limiter, k8sattributes, batch]
+        exporters: [otlphttp/victoriatraces]
       metrics:
         receivers: [kubeletstats]
         processors: [memory_limiter, k8sattributes, batch]
@@ -64,9 +77,11 @@ resources:
 
 ports:
   otlp:
-    enabled: false
+    enabled: true
+    hostPort: null
   otlp-http:
-    enabled: false
+    enabled: true
+    hostPort: null
   jaeger-compact:
     enabled: false
   jaeger-thrift:

@@ -8,7 +8,7 @@ command:
 clusterRole:
   rules:
     - apiGroups: [""]
-      resources: ["nodes/metrics"]
+      resources: ["nodes/metrics", "nodes/pods"]
       verbs: ["get"]
 
 presets:

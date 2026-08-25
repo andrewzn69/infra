@@ -108,7 +108,7 @@ config:
     kubeletstats:
       insecure_skip_verify: true
       # cadvisor covers container and pod, avoid emitting both
-      metric_groups: [node]
+      metric_groups: [node, volume]
   exporters:
     debug: null
     otlphttp:

@@ -109,6 +109,8 @@ config:
       insecure_skip_verify: true
       # cadvisor covers container and pod, avoid emitting both
       metric_groups: [node, volume]
+      # pvc name comes from the pod spec, this is what reads it
+      extra_metadata_labels: [k8s.volume.type]
   exporters:
     debug: null
     otlphttp:

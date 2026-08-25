@@ -65,7 +65,7 @@ components:
     resources:
       requests:
         memory: 384Mi
-        cpu: 20m
+        cpu: 200m
       limits:
         memory: 2Gi
 

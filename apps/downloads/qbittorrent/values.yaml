@@ -231,3 +231,93 @@ components:
 
     metrics:
       enabled: false
+
+  exporter:
+    image:
+      repository: ghcr.io/martabal/qbittorrent-exporter
+      tag: "v2.0.2"
+      pullPolicy: IfNotPresent
+
+    service:
+      type: ClusterIP
+      port: 8090
+      targetPort: 8090
+      protocol: TCP
+      name: http
+
+    gateway:
+      enabled: false
+
+    commonAnnotations:
+      prometheus.io/scrape: "true"
+
+    resources:
+      requests:
+        memory: 32Mi
+        cpu: 10m
+      limits:
+        memory: 128Mi
+
+    env:
+      - name: QBITTORRENT_BASE_URL
+        value: "http://qbittorrent.downloads.svc.cluster.local:8080"
+      - name: QBITTORRENT_USERNAME
+        valueFrom:
+          secretKeyRef:
+            name: qbittorrent
+            key: QBIT_USERNAME
+      - name: QBITTORRENT_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: qbittorrent
+            key: QBIT_PASSWORD
+      - name: EXPORTER_PORT
+        value: "8090"
+
+    replicaCount: 1
+
+    securityContext:
+      runAsUser: 65532
+      runAsGroup: 65532
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+
+    configMap:
+      enabled: false
+
+    initContainers:
+      fixPermissions:
+        enabled: false
+
+    probes:
+      liveness:
+        enabled: true
+        type: httpGet
+        httpGet:
+          path: /healthz
+          port: 8090
+        initialDelaySeconds: 10
+        periodSeconds: 30
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 5
+      readiness:
+        enabled: true
+        type: httpGet
+        httpGet:
+          path: /healthz
+          port: 8090
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 5
+      startup:
+        enabled: false
+
+    metrics:
+      enabled: false

@@ -68,6 +68,7 @@ components:
         cpu: 100m
       limits:
         memory: 512Mi
+        cpu: 300m
 
     env:
       - name: TZ

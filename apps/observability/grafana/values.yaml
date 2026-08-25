@@ -1,6 +1,9 @@
 persistence:
   enabled: false
 
+plugins:
+  - grafana-clock-panel
+
 admin:
   existingSecret: grafana-env
   userKey: GF_SECURITY_ADMIN_USER

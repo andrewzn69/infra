@@ -147,8 +147,8 @@ components:
   peers-exporter:
     image:
       repository: ghcr.io/andrewzn69/qbittorrent-peers-exporter
-      tag: "latest"
-      pullPolicy: Always
+      tag: "0.1.0"
+      pullPolicy: IfNotPresent
 
     service:
       type: ClusterIP

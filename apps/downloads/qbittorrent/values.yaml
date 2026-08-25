@@ -54,7 +54,7 @@ components:
     resources:
       requests:
         cpu: 200m
-        memory: 1Gi
+        memory: 1280Mi
       limits:
         memory: 6Gi
 
@@ -102,6 +102,12 @@ components:
             capabilities:
               add:
                 - NET_ADMIN
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
           env:
             - name: VPN_SERVICE_PROVIDER
               value: mullvad

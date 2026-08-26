@@ -26,3 +26,5 @@ cainjector:
     limits:
       cpu: 100m
       memory: 128Mi
+  extraArgs:
+    - --enable-certificates-data-source=false

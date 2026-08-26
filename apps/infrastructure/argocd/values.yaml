@@ -51,7 +51,6 @@ repoServer:
       cpu: 100m
     limits:
       memory: 1Gi
-      cpu: 250m
 
 applicationSet:
   replicas: 1

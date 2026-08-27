@@ -20,6 +20,8 @@ extraObjects:
       task: backup
       retain: 7
       concurrency: 1
+      groups:
+        - backup
   - apiVersion: longhorn.io/v1beta2
     kind: RecurringJob
     metadata:
@@ -30,6 +32,8 @@ extraObjects:
       task: backup
       retain: 4
       concurrency: 1
+      groups:
+        - backup
 
 longhornManager:
   # without a request the manager runs BestEffort, gets starved on a busy node,

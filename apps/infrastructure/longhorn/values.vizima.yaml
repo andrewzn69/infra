@@ -1,9 +1,36 @@
+defaultBackupStore:
+  backupTarget: nfs://100.64.100.10:/storage/backup/longhorn/vizima
 defaultSettings:
   defaultDataPath: /var/mnt/data/longhorn
   guaranteedInstanceManagerCpu: "12"
   concurrentReplicaRebuildPerNodeLimit: "2"
   engineImagePodLivenessProbeTimeout: "30"
   engineImagePodLivenessProbePeriod: "60"
+  # scaled down apps leave their volumes detached, and a detached volume
+  # is skipped by recurring jobs unless this is on
+  allowRecurringJobWhileVolumeDetached: true
+extraObjects:
+  - apiVersion: longhorn.io/v1beta2
+    kind: RecurringJob
+    metadata:
+      name: backup-daily
+      namespace: longhorn-system
+    spec:
+      cron: "0 3 * * *"
+      task: backup
+      retain: 7
+      concurrency: 1
+  - apiVersion: longhorn.io/v1beta2
+    kind: RecurringJob
+    metadata:
+      name: backup-weekly
+      namespace: longhorn-system
+    spec:
+      cron: "0 4 * * 0"
+      task: backup
+      retain: 4
+      concurrency: 1
+
 longhornManager:
   # without a request the manager runs BestEffort, gets starved on a busy node,
   # and its readiness probe timing out makes longhorn mark the node down

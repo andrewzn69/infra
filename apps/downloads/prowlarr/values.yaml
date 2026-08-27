@@ -44,6 +44,9 @@ components:
           size: 2Gi
           accessMode: ReadWriteOnce
           storageClassName: longhorn
+          labels:
+            recurring-job.longhorn.io/source: enabled
+            recurring-job-group.longhorn.io/backup: enabled
 
       emptyDir:
         - name: tmp

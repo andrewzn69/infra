@@ -34,6 +34,21 @@ extraObjects:
       concurrency: 1
       groups:
         - backup
+  # saves pvc/pv/volume objects, so a rebuilt cluster can rebind volumes
+  # to their data instead of provisioning emtpy ones
+  - apiVersion: longhorn.io/v1beta2
+    kind: RecurringJob
+    metadata:
+      name: system-backup
+      namespace: longhorn-system
+    spec:
+      cron: "0 12 * * *"
+      task: system-backup
+      # matches backup-daily
+      retain: 7
+      concurrency: 1
+      parameters:
+        volume-backup-policy: disabled
 
 longhornManager:
   # without a request the manager runs BestEffort, gets starved on a busy node,

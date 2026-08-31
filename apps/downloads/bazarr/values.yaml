@@ -64,6 +64,8 @@ components:
       emptyDir:
         - name: tmp
           mountPath: /tmp
+        - name: logs
+          mountPath: /config/log
 
     resources:
       requests:
@@ -95,7 +97,7 @@ components:
             name: bazarr
             key: password
 
-    replicaCount: 0
+    replicaCount: 1
 
     securityContext:
       runAsUser: 10001

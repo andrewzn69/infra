@@ -51,6 +51,8 @@ components:
       emptyDir:
         - name: tmp
           mountPath: /tmp
+        - name: logs
+          mountPath: /config/logs
 
     resources:
       requests:
@@ -81,7 +83,7 @@ components:
       - name: PROWLARR__LOG__DBENABLED
         value: "False"
 
-    replicaCount: 0
+    replicaCount: 1
 
     securityContext:
       runAsUser: 10001

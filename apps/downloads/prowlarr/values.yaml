@@ -16,6 +16,7 @@ secrets:
 
 components:
   prowlarr:
+    replicaCount: 0
     image:
       repository: ghcr.io/home-operations/prowlarr
       tag: "2.3.7"

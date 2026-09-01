@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/core/service_v1.json
+apiVersion: v1
+kind: Service
+metadata:
+  name: vizima-gateway-static
+  namespace: tailscale-system
+spec:
+  type: ClusterIP
+  # consumers hardcode this address in hostAliases
+  clusterIP: 10.112.67.67
+  selector:
+    tailscale.com/parent-resource: vizima-gateway
+    tailscale.com/parent-resource-type: svc
+  ports:
+    - name: https
+      port: 443
+      targetPort: 443
+      protocol: TCP

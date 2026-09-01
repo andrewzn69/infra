@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: tailscale-egress-novigrad
+  name: tailscale-egress-vizima
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: git@github.com:andrewzn69/infra.git
     targetRevision: HEAD
-    path: apps/infrastructure/tailscale/egress/novigrad
+    path: apps/infrastructure/tailscale/egress/vizima
     directory:
       exclude: "application.yaml"
   destination:

@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/networking.k8s.io/networkpolicy_v1.json
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-media-to-vizima-gateway
+  namespace: tailscale-system
+spec:
+  # the operator-created proxy pods, matched by labels that survive recreation
+  podSelector:
+    matchLabels:
+      tailscale.com/parent-resource: vizima-gateway
+      tailscale.com/parent-resource-type: svc
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: media
+      ports:
+        - port: 443
+          protocol: TCP

@@ -1,0 +1,101 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/core/serviceaccount_v1.json
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: backup-pruner
+  namespace: database
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/rbac.authorization.k8s.io/role_v1.json
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: backup-pruner
+  namespace: database
+rules:
+  - apiGroups: ["postgresql.cnpg.io"]
+    resources: ["backups"]
+    verbs: ["get", "list", "delete"]
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/rbac.authorization.k8s.io/rolebinding_v1.json
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: backup-pruner
+  namespace: database
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: backup-pruner
+subjects:
+  - kind: ServiceAccount
+    name: backup-pruner
+    namespace: database
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/batch/cronjob_v1.json
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-pruner
+  namespace: database
+spec:
+  schedule: "0 6 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: backup-pruner
+          restartPolicy: OnFailure
+          securityContext:
+            runAsUser: 65532
+            runAsGroup: 65532
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: prune
+              image: docker.io/alpine/k8s:1.36.4
+              env:
+                - name: HOME
+                  value: /tmp
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  set -eu
+                  prune() {
+                    total=$(kubectl -n database get backup \
+                     -l cnpg.io/scheduled-backup="$1" -o name | wc -l)
+                    n=$((total - $2))
+                    if [ "$n" -le 0 ]; then
+                      echo "$1: $total backups, keeping $2, nothing to prune"
+                      return 0
+                    fi
+                    echo "$1: $total backups, keeping $2, deleting $n oldest"
+                    kubectl -n database get backup \
+                      -l cnpg.io/scheduled-backup="$1" \
+                      --sort-by=.metadata.creationTimestamp -o name \
+                      | head -n "$n" \
+                      | xargs -r kubectl -n database delete
+                  }
+                  prune postgres-daily 7
+                  prune postgres-weekly 4
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  memory: 256Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+          volumes:
+            - name: tmp
+              emptyDir: {}

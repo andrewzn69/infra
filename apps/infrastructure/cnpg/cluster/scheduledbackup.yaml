@@ -1,0 +1,28 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/postgresql.cnpg.io/scheduledbackup_v1.json
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: postgres-daily
+  namespace: database
+spec:
+  cluster:
+    name: postgres
+  method: volumeSnapshot
+  schedule: "0 0 3 * * *"
+  # use a replica, never the primary
+  target: prefer-standby
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/postgresql.cnpg.io/scheduledbackup_v1.json
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: postgres-weekly
+  namespace: database
+spec:
+  cluster:
+    name: postgres
+  method: volumeSnapshot
+  schedule: "0 0 4 * * 0"
+  # use a replica, never the primary
+  target: prefer-standby

@@ -1,0 +1,36 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/argoproj.io/application_v1alpha1.json
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tailscale-egress-novigrad
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:andrewzn69/infra.git
+    targetRevision: HEAD
+    path: apps/infrastructure/tailscale/egress/novigrad
+    directory:
+      exclude: "application.yaml"
+  destination:
+    name: novigrad
+    namespace: tailscale-system
+  # tailscale operator overwrites spec.externalName on the egress svc with the
+  # proxy pods in-cluster hostname, w/o this, selfheal resets it to "placeholder"
+  # and breaks the egress route (bad)
+  ignoreDifferences:
+    - group: ""
+      kind: Service
+      name: vizima-gateway
+      jsonPointers:
+        - /spec/externalName
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - RespectIgnoreDifferences=true

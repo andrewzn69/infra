@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/core/service_v1.json
+apiVersion: v1
+kind: Service
+metadata:
+  name: vizima-gateway
+  namespace: tailscale-system
+  annotations:
+    tailscale.com/tailnet-ip: "100.64.100.20"
+spec:
+  type: ExternalName
+  # required field, the tailscale operator overwrites it with the proxy pod hostname
+  externalName: placeholder
+  ports:
+    - port: 443
+      protocol: TCP
+      name: https

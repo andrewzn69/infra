@@ -9,6 +9,8 @@ defaultSettings:
   # scaled down apps leave their volumes detached, and a detached volume
   # is skipped by recurring jobs unless this is on
   allowRecurringJobWhileVolumeDetached: true
+  # csi-plugin is BestEffort by default and gets starved, failing its liveness probe
+  systemManagedCSIComponentsResourceLimits: '{"longhorn-csi-plugin":{"requests":{"cpu":"10m","memory":"32Mi"},"limits":{"memory":"128Mi"}},"longhorn-liveness-probe":{"requests":{"cpu":"10m","memory":"32Mi"},"limits":{"memory":"64Mi"}}}'
 extraObjects:
   - apiVersion: longhorn.io/v1beta2
     kind: RecurringJob

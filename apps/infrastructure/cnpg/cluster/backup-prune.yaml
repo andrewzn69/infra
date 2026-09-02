@@ -66,17 +66,17 @@ spec:
                 - |
                   set -eu
                   prune() {
-                    total=$(kubectl -n database get backup \
-                     -l cnpg.io/scheduled-backup="$1" -o name | wc -l)
+                    list=$(kubectl -n database get backups.postgresql.cnpg.io \
+                      -l cnpg.io/scheduled-backup="$1" \
+                      --sort-by=.metadata.creationTimestamp -o name)
+                    total=$(printf '%s' "$list" | grep -c . || true)
                     n=$((total - $2))
                     if [ "$n" -le 0 ]; then
                       echo "$1: $total backups, keeping $2, nothing to prune"
                       return 0
                     fi
                     echo "$1: $total backups, keeping $2, deleting $n oldest"
-                    kubectl -n database get backup \
-                      -l cnpg.io/scheduled-backup="$1" \
-                      --sort-by=.metadata.creationTimestamp -o name \
+                    printf '%s\n' "$list" \
                       | head -n "$n" \
                       | xargs -r kubectl -n database delete
                   }

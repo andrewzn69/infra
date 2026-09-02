@@ -49,6 +49,14 @@ components:
         - path: /
           pathType: Prefix
 
+    # this is for jellyfin plugin(s) communicating with radarr/sonarr
+    # radarr and sonarr run on vizima, they are reachable only thorugh the egress proxy
+    hostAliases:
+      - ip: 10.112.67.67
+        hostnames:
+          - radarr.internal.zemn.xyz
+          - sonarr.internal.zemn.xyz
+
     resources:
       requests:
         memory: 512Mi

@@ -52,12 +52,12 @@ components:
       nfs:
         - name: music
           mountPath: /music
-          server: "100.64.100.10"
+          server: "192.168.1.50"
           path: "/storage/media/music"
           readOnly: false
         - name: downloads
           mountPath: /downloads
-          server: "100.64.100.10"
+          server: "192.168.1.50"
           path: "/storage/downloads/slskd"
           readOnly: false
 

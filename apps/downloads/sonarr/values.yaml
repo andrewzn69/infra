@@ -52,12 +52,12 @@ components:
       nfs:
         - name: shows
           mountPath: /tv
-          server: "100.64.100.10"
+          server: "192.168.1.50"
           path: "/storage/media/shows"
           readOnly: false
         - name: downloads
           mountPath: /downloads
-          server: "100.64.100.10"
+          server: "192.168.1.50"
           path: "/storage/downloads/qbittorrent"
           readOnly: false
 

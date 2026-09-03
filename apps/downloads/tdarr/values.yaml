@@ -1,0 +1,122 @@
+namespace: downloads
+
+components:
+  tdarr:
+    image:
+      repository: ghcr.io/haveagitgat/tdarr
+      tag: "2.50.01"
+      pullPolicy: IfNotPresent
+
+    replicaCount: 1
+
+    service:
+      type: ClusterIP
+      port: 8265
+      targetPort: 8265
+      protocol: TCP
+      name: http
+      additionalPorts:
+        - name: server
+          port: 8266
+          targetPort: 8266
+        - name: node
+          port: 8267
+          targetPort: 8267
+
+    gateway:
+      enabled: true
+      gatewayName: internal
+      gatewayNamespace: gateway-system
+      hostname: tdarr.internal.zemn.xyz
+      paths:
+        - path: /
+          pathType: PathPrefix
+
+    volumes:
+      pvc:
+        # database, plugins and scan results are rebuildable, so no backup labels
+        - name: server
+          mountPath: /app/server
+          size: 5Gi
+          readOnly: false
+          accessMode: ReadWriteOnce
+          storageClassName: longhorn
+        - name: configs
+          mountPath: /app/configs
+          size: 1Gi
+          readOnly: false
+          accessMode: ReadWriteOnce
+          storageClassName: longhorn
+
+      nfs:
+        - name: movies
+          mountPath: /movies
+          server: "192.168.1.50"
+          path: "/storage/media/movies"
+          readOnly: false
+        - name: shows
+          mountPath: /shows
+          server: "192.168.1.50"
+          path: "/storage/media/shows"
+        - name: temp
+          mountPath: /temp
+          server: "192.168.1.50"
+          path: "/storage/media/.tdarr_temp"
+          readOnly: false
+
+      emptyDir:
+        - name: logs
+          mountPath: /app/logs
+
+    resources:
+      requests:
+        memory: 512Mi
+        cpu: 200m
+      limits:
+        memory: 2Gi
+
+    env:
+      - name: TZ
+        value: "Europe/Prague"
+      # s6 starts as root and drops to these, it will match media ownership
+      - name: PUID
+        value: "1000"
+      - name: PGID
+        value: "1000"
+      - name: serverIP
+        value: "0.0.0.0"
+      - name: serverPort
+        value: "8266"
+      - name: webUIPort
+        value: "8265"
+      # runs the node inside the server container, no second deployment
+      - name: internalNode
+        value: "true"
+      - name: nodeName
+        value: "vizima"
+
+    # entrypoint chowns /app and /temp as root b4 dropping to puid/pgid
+    podSecurityContext:
+      fsGroup: 1000
+      fsGroupChangePolicy: OnRootMismatch
+
+    securityContext:
+      allowPrivilegeEscalation: false
+
+    configMap:
+      enabled: false
+
+    initContainers:
+      fixPermissions:
+        enabled: false
+
+    probes:
+      liveness:
+        enabled: false
+      readiness:
+        enabled: false
+      startup:
+        enabled: false
+
+    metrics:
+      enabled: false

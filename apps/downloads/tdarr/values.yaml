@@ -4,7 +4,7 @@ components:
   tdarr:
     image:
       repository: ghcr.io/haveagitgat/tdarr
-      tag: "2.50.01"
+      tag: "2.86.01"
       pullPolicy: IfNotPresent
 
     replicaCount: 1

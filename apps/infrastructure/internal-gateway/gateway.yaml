@@ -5,8 +5,6 @@ kind: Gateway
 metadata:
   name: internal
   namespace: gateway-system
-  annotations:
-    tailscale.com/hostname: vizima-internal-gateway
 spec:
   gatewayClassName: cilium-internal
   infrastructure:

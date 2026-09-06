@@ -5,6 +5,19 @@ kind: Cluster
 metadata:
   name: postgres
   namespace: database
+  annotations:
+    # 2026-09-06: argocd pruned cluster and cnpg rebuilt it empty.
+    # the cnpg-cluster Application stopped rendering its own application.yaml,
+    # so with prune:true it pruned itself, and its resources-finalizer cascade
+    # deleted everything it owned, including this cluster and its pvcs.
+    # every db was lost and restored from daily volumesnapshot.
+    #
+    # Prune=false - never delete when it disappears from git
+    # Delete=false - never delete when the Application is deleted (cascade)
+    #
+    # deleting this cluster must be a deliberate manual step, never a side effect
+    # of some argocd sync.
+    argocd.argoproj.io/sync-options: Prune=false,Delete=false
 spec:
   instances: 3
   storage:

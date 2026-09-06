@@ -52,6 +52,15 @@ extraObjects:
       parameters:
         volume-backup-policy: disabled
 
+httproute:
+  enabled: true
+  parentRefs:
+    - name: internal
+      namespace: gateway-system
+      sectionName: https
+  hostnames:
+    - longhorn.internal.zemn.xyz
+
 longhornManager:
   # without a request the manager runs BestEffort, gets starved on a busy node,
   # and its readiness probe timing out makes longhorn mark the node down

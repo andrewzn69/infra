@@ -11,6 +11,8 @@ spec:
     repoURL: git@github.com:andrewzn69/infra.git
     targetRevision: HEAD
     path: apps/infrastructure/cert-manager/issuers
+    directory:
+      exclude: "application.yaml"
   destination:
     name: vizima
     namespace: cert-manager

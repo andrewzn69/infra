@@ -15,6 +15,7 @@ spec:
     path: apps/infrastructure/cnpg/cluster
     directory:
       recurse: true
+      exclude: "application.yaml"
   destination:
     name: vizima
     namespace: database

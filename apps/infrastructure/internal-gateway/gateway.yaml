@@ -10,9 +10,6 @@ spec:
   infrastructure:
     annotations:
       tailscale.com/hostname: vizima-internal-gateway
-      # recreated gw would otherwise get a new tailscale ip, breaking
-      # *.internal.zemn.xyz dns record
-      tailscale.com/tailnet-ip: "100.64.100.20"
   listeners:
     - name: http
       port: 80

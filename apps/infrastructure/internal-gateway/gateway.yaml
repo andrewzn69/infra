@@ -1,3 +1,5 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/gateway.networking.k8s.io/gateway_v1.json
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
@@ -7,6 +9,12 @@ metadata:
     tailscale.com/hostname: vizima-internal-gateway
 spec:
   gatewayClassName: cilium-internal
+  infrastructure:
+    annotations:
+      tailscale.com/hostname: vizima-internal-gateway
+      # recreated gw would otherwise get a new tailscale ip, breaking
+      # *.internal.zemn.xyz dns record
+      tailscale.com/tailnet-ip: "100.64.100.20"
   listeners:
     - name: http
       port: 80

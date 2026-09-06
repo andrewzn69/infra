@@ -17,14 +17,6 @@ spec:
     limits:
       memory: 1Gi
 
-  bootstrap:
-    recovery:
-      volumeSnapshots:
-        storage:
-          kind: VolumeSnapshot
-          name: postgres-daily-20260906030000
-          apiGroup: snapshot.storage.k8s.io
-
   backup:
     volumeSnapshot:
       className: longhorn-backup-vsc

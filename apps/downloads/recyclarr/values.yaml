@@ -105,7 +105,9 @@ components:
                 folder: jellyfin-tmdb
                 movie:
                   rename: true
-                  standard: jellyfin-tmdb
+                  # file format is owned in the app. every guide preset carries mediainfo
+                  # audio tokens, and those are re-read from disk on rescan, so stripping
+                  # audio tracks would move filenames out from under their sidecars
 
           sonarr:
             series:
@@ -138,7 +140,7 @@ components:
                 season: default
                 episodes:
                   rename: true
-                  standard: default
+                  # file format is owned in the app, same reason as radarr
 
     replicaCount: 1
 

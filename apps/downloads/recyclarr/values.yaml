@@ -81,10 +81,19 @@ components:
                 type: movie
 
               quality_profiles:
-                - name: SQP-1 (1080p)
+                - name: 1080p
                   trash_id: 0896c29d74de619df168d23b98104b22
                   reset_unmatched_scores:
                     enabled: true
+                  # the guide gates on release group tiers, rejecting most of what the
+                  # configured indexers carry
+                  min_format_score: 0
+                  upgrade:
+                    allowed: true
+                    until_quality: Bluray|WEB-1080p
+                    # the guide aims higher than any single release can score, so it
+                    # never stops searching
+                    until_score: 1700
                   qualities:
                     - name: Bluray|WEB-1080p
                       qualities:
@@ -107,9 +116,22 @@ components:
                 type: series
 
               quality_profiles:
-                - trash_id: 72dae194fc92bf828f32cde7744e51a1  # web-1080p
+                - name: 1080p
+                  trash_id: 72dae194fc92bf828f32cde7744e51a1  # web-1080p
                   reset_unmatched_scores:
                     enabled: true
+                  upgrade:
+                    allowed: true
+                    until_quality: Bluray|WEB-1080p
+                    until_score: 1700
+                  # the guide profile allows WEB only, so bluray releases already on
+                  # disk would be treated as wrong quality and replaced
+                  qualities:
+                    - name: Bluray|WEB-1080p
+                      qualities:
+                        - Bluray-1080p
+                        - WEBRip-1080p
+                        - WEBDL-1080p
 
               media_naming:
                 series: jellyfin-tvdb

@@ -249,7 +249,16 @@ components:
         successThreshold: 1
         failureThreshold: 5
       startup:
-        enabled: false
+        enabled: true
+        type: httpGet
+        httpGet:
+          path: /
+          port: 5173
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 60
 
     metrics:
       enabled: false

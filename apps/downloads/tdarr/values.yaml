@@ -124,7 +124,7 @@ components:
   tdarr-exporter:
     image:
       repository: homeylab/tdarr-exporter
-      tag: "v3.0.0"
+      tag: "3.0.0"
       pullPolicy: IfNotPresent
 
     replicaCount: 1

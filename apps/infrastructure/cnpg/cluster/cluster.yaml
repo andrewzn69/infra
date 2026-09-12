@@ -81,3 +81,8 @@ spec:
         login: true
         passwordSecret:
           name: pg-role-grafana
+      - name: kaneo
+        ensure: present
+        login: true
+        passwordSecret:
+          name: pg-role-kaneo

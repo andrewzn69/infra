@@ -59,7 +59,7 @@ components:
             name: kaneo
             key: auth_secret
       - name: DISABLE_REGISTRATION
-        value: "false"
+        value: "true"
       - name: DISABLE_GUEST_ACCESS
         value: "true"
 

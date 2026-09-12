@@ -1,0 +1,255 @@
+namespace: productivity
+
+secrets:
+  enabled: true
+  type: infisical
+  infisical:
+    hostAPI: https://eu.infisical.com
+    projectSlug: vizima
+    envSlug: prod
+    secretsPath: "/productivity/kaneo"
+    auth:
+      credentialsSecretName: infisical-universal-auth
+      credentialsSecretNamespace: infisical-system
+    managedSecret:
+      creationPolicy: Owner
+
+components:
+  api:
+    image:
+      repository: ghcr.io/usekaneo/api
+      tag: "2.24.0"
+      pullPolicy: IfNotPresent
+
+    replicaCount: 1
+
+    service:
+      type: ClusterIP
+      port: 1337
+      targetPort: 1337
+      protocol: TCP
+      name: http
+
+    gateway:
+      enabled: true
+      gatewayName: internal
+      gatewayNamespace: gateway-system
+      hostname: kaneo.internal.zemn.xyz
+      paths:
+        - path: /api
+          pathType: PathPrefix
+
+    env:
+      - name: TZ
+        value: "Europe/Prague"
+      - name: KANEO_CLIENT_URL
+        value: "https://kaneo.internal.zemn.xyz"
+      - name: KANEO_API_URL
+        value: "https://kaneo.internal.zemn.xyz/api"
+      - name: CORS_ORIGINS
+        value: "https://kaneo.internal.zemn.xyz"
+      - name: DATABASE_URL
+        valueFrom:
+          secretKeyRef:
+            name: kaneo
+            key: postgres_uri
+      - name: AUTH_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: kaneo
+            key: auth_secret
+      - name: DISABLE_REGISTRATION
+        value: "false"
+      - name: DISABLE_GUEST_ACCESS
+        value: "true"
+
+    volumes:
+      emptyDir:
+        - name: tmp
+          mountPath: /tmp
+        - name: data
+          mountPath: /app/apps/api/data
+
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 100m
+      limits:
+        memory: 768Mi
+        cpu: 1000m
+
+    podSecurityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      fsGroup: 1001
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+
+    configMap:
+      enabled: false
+
+    initContainers:
+      fixPermissions:
+        enabled: false
+
+    probes:
+      liveness:
+        enabled: true
+        type: httpGet
+        httpGet:
+          path: /api/health
+          port: 1337
+        initialDelaySeconds: 60
+        periodSeconds: 30
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 5
+      readiness:
+        enabled: true
+        type: httpGet
+        httpGet:
+          path: /api/health
+          port: 1337
+        initialDelaySeconds: 15
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 5
+      startup:
+        enabled: false
+
+    metrics:
+      enabled: false
+
+  web:
+    image:
+      repository: ghcr.io/usekaneo/web
+      tag: "2.24.0"
+      pullPolicy: IfNotPresent
+
+    replicaCount: 1
+
+    service:
+      type: ClusterIP
+      port: 5173
+      targetPort: 5173
+      protocol: TCP
+      name: http
+
+    gateway:
+      enabled: true
+      gatewayName: internal
+      gatewayNamespace: gateway-system
+      hostname: kaneo.internal.zemn.xyz
+      paths:
+        - path: /
+          pathType: PathPrefix
+
+    env:
+      - name: TZ
+        value: "Europe/Prague"
+      - name: KANEO_CLIENT_URL
+        value: "https://kaneo.internal.zemn.xyz"
+      - name: KANEO_API_URL
+        value: "https://kaneo.internal.zemn.xyz/api"
+
+    volumes:
+      emptyDir:
+        - name: html
+          mountPath: /usr/share/nginx/html
+        - name: nginx-conf
+          mountPath: /etc/nginx/conf.d
+        - name: nginx-cache
+          mountPath: /var/cache/nginx
+        - name: run
+          mountPath: /run
+
+    resources:
+      requests:
+        memory: 32Mi
+        cpu: 25m
+      limits:
+        memory: 128Mi
+        cpu: 250m
+
+    podSecurityContext:
+      runAsUser: 1001
+      runAsGroup: 1001
+      fsGroup: 1001
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+
+    configMap:
+      enabled: false
+
+    initContainers:
+      fixPermissions:
+        enabled: false
+      custom:
+        - name: seed
+          image: ghcr.io/usekaneo/web:2.24.0
+          command:
+            - sh
+            - -c
+            - |
+              cp -a /usr/share/nginx/html/. /seed/html/
+              cp -a /etc/nginx/conf.d/. /seed/conf/
+          volumeMounts:
+            - name: html
+              mountPath: /seed/html
+            - name: nginx-conf
+              mountPath: /seed/conf
+          securityContext:
+            runAsUser: 1001
+            runAsGroup: 1001
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
+    probes:
+      liveness:
+        enabled: true
+        type: httpGet
+        httpGet:
+          path: /
+          port: 5173
+        initialDelaySeconds: 15
+        periodSeconds: 30
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 5
+      readiness:
+        enabled: true
+        type: httpGet
+        httpGet:
+          path: /
+          port: 5173
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 5
+      startup:
+        enabled: false
+
+    metrics:
+      enabled: false

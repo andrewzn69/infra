@@ -175,9 +175,8 @@ components:
     probes:
       liveness:
         enabled: true
-        type: httpGet
-        httpGet:
-          path: /metrics
+        type: tcpSocket
+        tcpSocket:
           port: 9090
         initialDelaySeconds: 10
         periodSeconds: 30

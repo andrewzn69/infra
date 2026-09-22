@@ -69,6 +69,6 @@ longhornManager:
       cpu: 50m
       memory: 320Mi
 persistence:
-  defaultClassReplicaCount: 3
+  defaultClassReplicaCount: 2
 preUpgradeChecker:
   jobEnabled: false

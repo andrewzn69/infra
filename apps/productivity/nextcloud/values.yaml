@@ -150,11 +150,6 @@ components:
               https https;
           }
 
-          map $http_x_forwarded_port $real_port {
-              default $server_port;
-              443     443;
-          }
-
           server {
               listen 8080;
               root /var/www/html;
@@ -195,7 +190,7 @@ components:
 
               location = / {
                   if ( $http_user_agent ~ ^DavClnt ) {
-                      return 302 $real_scheme://$host:$real_port/remote.php/webdav/$is_args$args;
+                      return 302 $real_scheme://$host/remote.php/webdav/$is_args$args;
                   }
               }
 
@@ -207,10 +202,10 @@ components:
 
               # regex exception, otherwise the hidden path rule below swallows these
               location ^~ /.well-known {
-                  location = /.well-known/carddav { return 301 $real_scheme://$host:$real_port/remote.php/dav/; }
-                  location = /.well-known/caldav  { return 301 $real_scheme://$host:$real_port/remote.php/dav/; }
+                  location = /.well-known/carddav { return 301 $real_scheme://$host/remote.php/dav/; }
+                  location = /.well-known/caldav  { return 301 $real_scheme://$host/remote.php/dav/; }
 
-                  return 301 $real_scheme://$host:$real_port/index.php$request_uri;
+                  return 301 $real_scheme://$host/index.php$request_uri;
               }
 
               location ~ ^/(?:build|tests|config|lib|3rdparty|templates|data)(?:$|/)  { return 404; }
@@ -254,7 +249,7 @@ components:
               }
 
               location /remote {
-                  return 301 $real_scheme://$host:$real_port/remote.php$request_uri;
+                  return 301 $real_scheme://$host/remote.php$request_uri;
               }
 
               location / {

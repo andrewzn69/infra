@@ -108,6 +108,8 @@ components:
           mountPath: /tmp
         - name: php-conf
           mountPath: /usr/local/etc/php/conf.d
+        - name: php-fpm-conf
+          mountPath: /usr/local/etc/php-fpm.d
 
     resources:
       requests:
@@ -261,16 +263,22 @@ components:
       fixPermissions:
         enabled: false
       custom:
-        # entrypoint writes redis-session.ini here, so it cannot stay read-only
+        # entrypoint writes redis-session.ini into conf.d, so neither dir can
+        # stay read-only. zz-pool.conf sorts after www.conf and wins
         - name: seed-php-conf
           image: nextcloud:35.0.0-fpm
           command:
             - sh
             - -c
-            - cp -r /usr/local/etc/php/conf.d/. /seed/
+            - |
+              cp -r /usr/local/etc/php/conf.d/. /seed/conf.d/
+              cp -r /usr/local/etc/php-fpm.d/. /seed/fpm.d/
+              printf '[www]\npm.max_children = 10\n' > /seed/fpm.d/zz-pool.conf
           volumeMounts:
             - name: php-conf
-              mountPath: /seed
+              mountPath: /seed/conf.d
+            - name: php-fpm-conf
+              mountPath: /seed/fpm.d
           securityContext:
             runAsUser: 10001
             runAsGroup: 10001

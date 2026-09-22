@@ -1,0 +1,483 @@
+namespace: productivity
+
+secrets:
+  enabled: true
+  type: infisical
+  infisical:
+    hostAPI: https://eu.infisical.com
+    projectSlug: vizima
+    envSlug: prod
+    secretsPath: "/productivity/nextcloud"
+    auth:
+      credentialsSecretName: infisical-universal-auth
+      credentialsSecretNamespace: infisical-system
+    managedSecret:
+      creationPolicy: Owner
+
+components:
+  nextcloud:
+    image:
+      repository: nextcloud
+      tag: "35.0.0-fpm"
+      pullPolicy: IfNotPresent
+
+    replicaCount: 1
+
+    service:
+      type: ClusterIP
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: http
+
+    gateway:
+      enabled: true
+      gatewayName: internal
+      gatewayNamespace: gateway-system
+      hostname: nextcloud.internal.zemn.xyz
+      paths:
+        - path: /
+          pathType: PathPrefix
+
+    env:
+      - name: TZ
+        value: "Europe/Prague"
+      - name: POSTGRES_HOST
+        value: "postgres-rw.database.svc.cluster.local"
+      - name: POSTGRES_DB
+        value: "nextcloud"
+      - name: POSTGRES_USER
+        valueFrom:
+          secretKeyRef:
+            name: nextcloud
+            key: username
+      - name: POSTGRES_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: nextcloud
+            key: password
+      - name: NEXTCLOUD_ADMIN_USER
+        valueFrom:
+          secretKeyRef:
+            name: nextcloud
+            key: admin_user
+      - name: NEXTCLOUD_ADMIN_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: nextcloud
+            key: admin_password
+      - name: REDIS_HOST
+        value: "nextcloud-valkey"
+      - name: REDIS_HOST_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: nextcloud
+            key: valkey_password
+      - name: NEXTCLOUD_TRUSTED_DOMAINS
+        value: "nextcloud.internal.zemn.xyz"
+      - name: OVERWRITEPROTOCOL
+        value: "https"
+      - name: OVERWRITECLIURL
+        value: "https://nextcloud.internal.zemn.xyz"
+      - name: PHP_MEMORY_LIMIT
+        value: "512M"
+      - name: PHP_UPLOAD_LIMIT
+        value: "512M"
+
+    volumes:
+      pvc:
+        - name: html
+          mountPath: /var/www/html
+          size: 10Gi
+          readOnly: false
+          accessMode: ReadWriteOnce
+          storageClassName: longhorn
+          labels:
+            recurring-job.longhorn.io/source: enabled
+            recurring-job-group.longhorn.io/backup: enabled
+
+      nfs:
+        - name: data
+          mountPath: /var/www/html/data
+          server: "192.168.1.50"
+          path: "/storage/nextcloud"
+          readOnly: false
+
+      emptyDir:
+        - name: tmp
+          mountPath: /tmp
+
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 100m
+      limits:
+        memory: 1Gi
+        cpu: 1000m
+
+    podSecurityContext:
+      runAsUser: 10001
+      runAsGroup: 10001
+      fsGroup: 10001
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+
+    configMap:
+      enabled: true
+      mountPath: /etc/nginx/conf.d/default.conf
+      subPath: default.conf
+      files:
+        default.conf: |
+          # forked from nextcloud/helm charts/nextcloud/files/nginx.config.tpl at 81db960
+          # not auto-synced, see INFRA-118 for what was changed and how to check it
+
+          upstream php-handler {
+              server 127.0.0.1:9000;
+          }
+
+          map $http_x_forwarded_proto $real_scheme {
+              default $scheme;
+              https https;
+          }
+
+          map $http_x_forwarded_port $real_port {
+              default $server_port;
+              443     443;
+          }
+
+          server {
+              listen 8080;
+              root /var/www/html;
+              server_tokens off;
+
+              add_header Referrer-Policy "no-referrer" always;
+              add_header X-Content-Type-Options "nosniff" always;
+              add_header X-Frame-Options "SAMEORIGIN" always;
+              add_header X-Permitted-Cross-Domain-Policies "none" always;
+              add_header X-Robots-Tag "noindex, nofollow" always;
+
+              # php accepts 512M, nginx would otherwise reject the body at its own default
+              client_max_body_size 512M;
+              client_body_buffer_size 512k;
+
+              gzip on;
+              gzip_vary on;
+              gzip_comp_level 4;
+              gzip_min_length 256;
+              gzip_proxied expired no-cache no-store private no_last_modified no_etag auth;
+              gzip_types application/atom+xml text/javascript application/javascript application/json application/ld+json application/manifest+json application/rss+xml application/vnd.geo+json application/vnd.ms-fontobject application/wasm application/x-font-ttf application/x-web-app-manifest+json application/xhtml+xml application/xml font/opentype image/bmp image/svg+xml image/x-icon text/cache-manifest text/css text/plain text/vcard text/vnd.rim.location.xloc text/vtt text/x-component text/x-cross-domain-policy;
+
+              fastcgi_hide_header X-Powered-By;
+
+              include mime.types;
+              types {
+                  text/javascript js mjs;
+                  application/wasm wasm;
+              }
+
+              index index.php index.html /index.php$request_uri;
+
+              # probes land here, no php so no trusted domain check
+              location = /healthz {
+                  access_log off;
+                  return 200;
+              }
+
+              location = / {
+                  if ( $http_user_agent ~ ^DavClnt ) {
+                      return 302 $real_scheme://$host:$real_port/remote.php/webdav/$is_args$args;
+                  }
+              }
+
+              location = /robots.txt {
+                  allow all;
+                  log_not_found off;
+                  access_log off;
+              }
+
+              # regex exception, otherwise the hidden path rule below swallows these
+              location ^~ /.well-known {
+                  location = /.well-known/carddav { return 301 $real_scheme://$host:$real_port/remote.php/dav/; }
+                  location = /.well-known/caldav  { return 301 $real_scheme://$host:$real_port/remote.php/dav/; }
+
+                  return 301 $real_scheme://$host:$real_port/index.php$request_uri;
+              }
+
+              location ~ ^/(?:build|tests|config|lib|3rdparty|templates|data)(?:$|/)  { return 404; }
+              location ~ ^/(?:\.|autotest|occ|issue|indie|db_|console)                { return 404; }
+
+              # must stay above the static blocks or nginx loops prepending /index.php
+              location ~ \.php(?:$|/) {
+                  rewrite ^/(?!index|remote|public|cron|core\/ajax\/update|status|ocs\/v[12]|updater\/.+|ocs-provider\/.+|.+\/richdocumentscode(_arm64)?\/proxy) /index.php$request_uri;
+
+                  fastcgi_split_path_info ^(.+?\.php)(/.*)$;
+                  set $path_info $fastcgi_path_info;
+
+                  try_files $fastcgi_script_name =404;
+
+                  include fastcgi_params;
+                  fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                  fastcgi_param PATH_INFO $path_info;
+                  # tls ends at the gateway, php still has to generate https urls
+                  fastcgi_param HTTPS on;
+
+                  fastcgi_param modHeadersAvailable true;
+                  fastcgi_param front_controller_active true;
+                  fastcgi_pass php-handler;
+
+                  fastcgi_intercept_errors on;
+                  fastcgi_request_buffering on;
+
+                  fastcgi_max_temp_file_size 0;
+              }
+
+              location ~ \.(?:css|js|mjs|svg|gif|ico|jpg|png|webp|wasm|tflite|map|ogg|flac)$ {
+                  try_files $uri /index.php$request_uri;
+                  expires 6M;
+                  access_log off;
+              }
+
+              location ~ \.(otf|woff2?)$ {
+                  try_files $uri /index.php$request_uri;
+                  expires 7d;
+                  access_log off;
+              }
+
+              location /remote {
+                  return 301 $real_scheme://$host:$real_port/remote.php$request_uri;
+              }
+
+              location / {
+                  try_files $uri $uri/ /index.php$request_uri;
+              }
+          }
+
+    initContainers:
+      fixPermissions:
+        enabled: false
+
+    probes:
+      liveness:
+        enabled: true
+        type: httpGet
+        httpGet:
+          path: /healthz
+          port: 8080
+        initialDelaySeconds: 60
+        periodSeconds: 30
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 5
+      readiness:
+        enabled: true
+        type: httpGet
+        httpGet:
+          path: /healthz
+          port: 8080
+        initialDelaySeconds: 15
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 5
+      startup:
+        enabled: true
+        type: httpGet
+        httpGet:
+          path: /healthz
+          port: 8080
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 60
+
+    metrics:
+      enabled: false
+
+    sidecars:
+      custom:
+        - name: nginx
+          image: nginxinc/nginx-unprivileged:1.30.5-alpine
+          volumeMounts:
+            - name: html
+              mountPath: /var/www/html
+              readOnly: true
+            - name: config-files
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+            # the image points every nginx temp path at /tmp
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              memory: 32Mi
+              cpu: 25m
+            limits:
+              memory: 128Mi
+              cpu: 250m
+          # 101 is the image's own uid, it owns /etc/nginx as that user
+          securityContext:
+            runAsUser: 101
+            runAsGroup: 101
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
+        # the image's own /cron.sh is busybox crond and needs root
+        - name: cron
+          image: nextcloud:35.0.0-fpm
+          command:
+            - sh
+            - -c
+            - |
+              while true; do
+                php -f /var/www/html/cron.php
+                sleep 300
+              done
+          # db creds are baked into config.php at install, these are the
+          # ones the image's config files read from the env on every request
+          env:
+            - name: TZ
+              value: "Europe/Prague"
+            - name: REDIS_HOST
+              value: "nextcloud-valkey"
+            - name: REDIS_HOST_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: nextcloud
+                  key: valkey_password
+            - name: OVERWRITEPROTOCOL
+              value: "https"
+            - name: OVERWRITECLIURL
+              value: "https://nextcloud.internal.zemn.xyz"
+            - name: PHP_MEMORY_LIMIT
+              value: "512M"
+          volumeMounts:
+            - name: html
+              mountPath: /var/www/html
+            - name: data
+              mountPath: /var/www/html/data
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 25m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+          securityContext:
+            runAsUser: 10001
+            runAsGroup: 10001
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
+  valkey:
+    image:
+      repository: valkey/valkey
+      tag: "9.1.2-alpine"
+      pullPolicy: IfNotPresent
+
+    replicaCount: 1
+
+    service:
+      type: ClusterIP
+      port: 6379
+      targetPort: 6379
+      protocol: TCP
+      name: redis
+
+    command:
+      - valkey-server
+
+    args:
+      - --save
+      - ""
+      - --appendonly
+      - "no"
+      - --requirepass
+      - $(VALKEY_PASSWORD)
+
+    env:
+      - name: VALKEY_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: nextcloud
+            key: valkey_password
+
+    volumes:
+      emptyDir:
+        - name: data
+          mountPath: /data
+
+    resources:
+      requests:
+        memory: 32Mi
+        cpu: 25m
+      limits:
+        memory: 256Mi
+        cpu: 250m
+
+    podSecurityContext:
+      runAsUser: 10001
+      runAsGroup: 10001
+      fsGroup: 10001
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+
+    configMap:
+      enabled: false
+
+    initContainers:
+      fixPermissions:
+        enabled: false
+
+    probes:
+      liveness:
+        enabled: true
+        type: tcpSocket
+        tcpSocket:
+          port: 6379
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 5
+      readiness:
+        enabled: true
+        type: tcpSocket
+        tcpSocket:
+          port: 6379
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 5
+      startup:
+        enabled: false
+
+    metrics:
+      enabled: false

@@ -272,7 +272,7 @@ components:
           command:
             - sh
             - -c
-            - cp -a /usr/local/etc/php/conf.d/. /seed/
+            - cp -r /usr/local/etc/php/conf.d/. /seed/
           volumeMounts:
             - name: php-conf
               mountPath: /seed

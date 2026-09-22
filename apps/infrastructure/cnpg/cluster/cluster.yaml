@@ -19,7 +19,7 @@ metadata:
     # of some argocd sync.
     argocd.argoproj.io/sync-options: Prune=false,Delete=false
 spec:
-  instances: 3
+  instances: 2
   storage:
     size: 30Gi
     storageClass: longhorn-cnpg

@@ -106,6 +106,8 @@ components:
       emptyDir:
         - name: tmp
           mountPath: /tmp
+        - name: php-conf
+          mountPath: /usr/local/etc/php/conf.d
 
     resources:
       requests:
@@ -263,6 +265,26 @@ components:
     initContainers:
       fixPermissions:
         enabled: false
+      custom:
+        # entrypoint writes redis-session.ini here, so it cannot stay read-only
+        - name: seed-php-conf
+          image: nextcloud:35.0.0-fpm
+          command:
+            - sh
+            - -c
+            - cp -a /usr/local/etc/php/conf.d/. /seed/
+          volumeMounts:
+            - name: php-conf
+              mountPath: /seed
+          securityContext:
+            runAsUser: 10001
+            runAsGroup: 10001
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
 
     probes:
       liveness:

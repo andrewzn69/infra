@@ -86,3 +86,8 @@ spec:
         login: true
         passwordSecret:
           name: pg-role-kaneo
+      - name: nextcloud
+        ensure: present
+        login: true
+        passwordSecret:
+          name: pg-role-nextcloud

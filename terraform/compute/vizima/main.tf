@@ -23,12 +23,13 @@ module "proxmox_k8s_cluster" {
 }
 
 resource "tailscale_tailnet_key" "node" {
-  description   = "vizima vizima-node registration" # needs to be hardcoded because acl in tailscale
-  ephemeral     = false
-  expiry        = 2000
-  preauthorized = true
-  reusable      = true
-  tags          = ["tag:vizima-node"]
+  description         = "vizima vizima-node registration" # needs to be hardcoded because acl in tailscale
+  ephemeral           = false
+  expiry              = 2000
+  preauthorized       = true
+  recreate_if_invalid = "never" # auto recreate would rewrite every machine config
+  reusable            = true
+  tags                = ["tag:vizima-node"]
 }
 
 module "talos_cluster" {

@@ -1,0 +1,123 @@
+namespace: downloads
+
+components:
+  flaresolverr:
+    image:
+      repository: ghcr.io/flaresolverr/flaresolverr
+      tag: "v3.5.2"
+      pullPolicy: IfNotPresent
+
+    service:
+      type: ClusterIP
+      port: 8191
+      targetPort: 8191
+      protocol: TCP
+      name: http
+
+    gateway:
+      enabled: false
+
+    volumes:
+      emptyDir:
+        - name: app
+          mountPath: /app
+        - name: tmp
+          mountPath: /tmp
+
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 10m
+      limits:
+        memory: 1Gi
+
+    env:
+      - name: TZ
+        value: "Europe/Prague"
+      - name: LOG_LEVEL
+        value: "info"
+      # chromium and the driver patcher write under HOME, which has to be the seeded dir
+      - name: HOME
+        value: "/app"
+
+    replicaCount: 1
+
+    podSecurityContext:
+      runAsUser: 10001
+      runAsGroup: 10001
+      fsGroup: 10001
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+
+    configMap:
+      enabled: false
+
+    initContainers:
+      fixPermissions:
+        enabled: false
+      custom:
+        # chromedriver is patched in place under /app, so the app runs from a writable copy
+        - name: seed-app
+          image: ghcr.io/flaresolverr/flaresolverr:v3.5.2
+          command:
+            - sh
+            - -c
+            - cp -r /app/. /seed/
+          volumeMounts:
+            - name: app
+              mountPath: /seed
+          securityContext:
+            runAsUser: 10001
+            runAsGroup: 10001
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
+    probes:
+      startup:
+        enabled: true
+        type: httpGet
+        httpGet:
+          path: /health
+          port: 8191
+        initialDelaySeconds: 5
+        periodSeconds: 5
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 24
+      liveness:
+        enabled: true
+        type: httpGet
+        httpGet:
+          path: /health
+          port: 8191
+        initialDelaySeconds: 0
+        periodSeconds: 30
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 3
+      readiness:
+        enabled: true
+        type: httpGet
+        httpGet:
+          path: /health
+          port: 8191
+        initialDelaySeconds: 0
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+        failureThreshold: 3
+
+    metrics:
+      enabled: false

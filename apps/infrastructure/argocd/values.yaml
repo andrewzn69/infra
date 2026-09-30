@@ -30,18 +30,6 @@ server:
           - path:
               type: PathPrefix
               value: /
-  grpcroute:
-    enabled: true
-    parentRefs:
-      - group: gateway.networking.k8s.io
-        kind: Gateway
-        name: internal
-        namespace: gateway-system
-        sectionName: https
-    hostnames:
-      - argocd.internal.zemn.xyz
-    rules:
-      - {}
 
 repoServer:
   replicas: 1

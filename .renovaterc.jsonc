@@ -4,5 +4,7 @@
 	// argocd manager has no default file match
 	"argocd": {
 		"managerFilePatterns": ["/(^|/)application(set)?\\.ya?ml$/"]
-	}
+	},
+	// release notes expanded and config description left out
+	"prBodyTemplate": "{{{header}}}{{{table}}}{{{warnings}}}{{{notes}}}{{{replace '<details>' '<details open>' changelogs}}}{{{controls}}}{{{footer}}}"
 }

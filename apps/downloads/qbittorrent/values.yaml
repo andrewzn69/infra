@@ -18,7 +18,7 @@ components:
   qbittorrent:
     image:
       repository: ghcr.io/home-operations/qbittorrent
-      tag: "5.1.4"
+      tag: "5.1.4@sha256:bb82ad6668f8eda1d0fcce6c1341498bfa879155bb1295cd9d314a2c35c07a01"
       pullPolicy: IfNotPresent
 
     service:
@@ -100,7 +100,7 @@ components:
     sidecars:
       custom:
         - name: gluetun
-          image: ghcr.io/qdm12/gluetun:v3.41.1
+          image: ghcr.io/qdm12/gluetun:v3.41.1@sha256:1a5bf4b4820a879cdf8d93d7ef0d2d963af56670c9ebff8981860b6804ebc8ab
           securityContext:
             capabilities:
               add:
@@ -156,7 +156,7 @@ components:
   peers-exporter:
     image:
       repository: ghcr.io/andrewzn69/qbittorrent-peers-exporter
-      tag: "0.1.0"
+      tag: "0.1.0@sha256:96c505ac2829b10ad9e813c6644f19ef81629d79d1682838f950b20d7e7d166f"
       pullPolicy: IfNotPresent
 
     service:
@@ -244,7 +244,7 @@ components:
   exporter:
     image:
       repository: ghcr.io/martabal/qbittorrent-exporter
-      tag: "v2.0.2"
+      tag: "v2.0.2@sha256:0e818e0240cc968fffdeba5f43a5f1452d72095a4324cea0cc18871e54805902"
       pullPolicy: IfNotPresent
 
     service:

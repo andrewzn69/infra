@@ -18,7 +18,7 @@ components:
   radarr:
     image:
       repository: ghcr.io/home-operations/radarr
-      tag: "6.2"
+      tag: "6.2@sha256:a566e7d364b96ce8ffb1b582266e656c69f3a12dec289d72bb0daa647ed4725e"
       pullPolicy: IfNotPresent
 
     service:
@@ -130,7 +130,7 @@ components:
   exportarr:
     image:
       repository: ghcr.io/onedr0p/exportarr
-      tag: "v2.3.0"
+      tag: "v2.3.0@sha256:af535d94061cf97a52e1661945ffba78c03f9443eae7c0da1a80a5a4be56b520"
       pullPolicy: IfNotPresent
 
     args:

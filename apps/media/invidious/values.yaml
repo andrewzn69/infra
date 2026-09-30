@@ -18,7 +18,7 @@ components:
   core:
     image:
       repository: quay.io/invidious/invidious
-      tag: "2026.06.09-6dec63a"
+      tag: "2026.06.09-6dec63a@sha256:3410ae6c090722a8f50decb729e9bc554bf4f52a40541ac1582d393cfcbf96ee"
       pullPolicy: IfNotPresent
 
     service:
@@ -119,7 +119,7 @@ components:
   companion:
     image:
       repository: quay.io/invidious/invidious-companion
-      tag: "latest"
+      tag: "latest@sha256:f15bc688aedd4bbb76cc636c7cc0cfff9b2b9f0734a4b831efbda7253b180525"
       pullPolicy: IfNotPresent
 
     service:

@@ -4,7 +4,7 @@ components:
   tdarr:
     image:
       repository: ghcr.io/haveagitgat/tdarr
-      tag: "2.86.01"
+      tag: "2.86.01@sha256:45742f00e51a58553844c8b13d97e7ae9b2ee9a056bd8e5993d9a8282a45a23f"
       pullPolicy: IfNotPresent
 
     replicaCount: 1
@@ -124,7 +124,7 @@ components:
   tdarr-exporter:
     image:
       repository: homeylab/tdarr-exporter
-      tag: "3.0.0"
+      tag: "3.0.0@sha256:07bfc1b72ecec73a343be2007c22373b6e15acbdbecdd29545ab5a03ca21ca69"
       pullPolicy: IfNotPresent
 
     replicaCount: 1

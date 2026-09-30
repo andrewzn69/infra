@@ -18,7 +18,7 @@ components:
   api:
     image:
       repository: ghcr.io/usekaneo/api
-      tag: "2.24.0"
+      tag: "2.24.0@sha256:2d8646d50dc9c45e97e0a008b44206f923bafbd185836252b303ff695d7d8237"
       pullPolicy: IfNotPresent
 
     replicaCount: 1
@@ -132,7 +132,7 @@ components:
   web:
     image:
       repository: ghcr.io/usekaneo/web
-      tag: "2.24.0"
+      tag: "2.24.0@sha256:97e6313d5355703b856478b219ea5690cb55ec5da48b161cd25642b6134e3bbe"
       pullPolicy: IfNotPresent
 
     replicaCount: 1
@@ -203,7 +203,7 @@ components:
         enabled: false
       custom:
         - name: seed
-          image: ghcr.io/usekaneo/web:2.24.0
+          image: ghcr.io/usekaneo/web:2.24.0@sha256:97e6313d5355703b856478b219ea5690cb55ec5da48b161cd25642b6134e3bbe
           command:
             - sh
             - -c

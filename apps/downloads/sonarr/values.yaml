@@ -18,7 +18,7 @@ components:
   sonarr:
     image:
       repository: ghcr.io/home-operations/sonarr
-      tag: "4.0.17"
+      tag: "4.0.17@sha256:1989718e9fceb3fd35b4e73f61696c68f8959b8f09981cf137fdef8e6338b85f"
       pullPolicy: IfNotPresent
 
     service:
@@ -130,7 +130,7 @@ components:
   exportarr:
     image:
       repository: ghcr.io/onedr0p/exportarr
-      tag: "v2.3.0"
+      tag: "v2.3.0@sha256:af535d94061cf97a52e1661945ffba78c03f9443eae7c0da1a80a5a4be56b520"
       pullPolicy: IfNotPresent
 
     args:

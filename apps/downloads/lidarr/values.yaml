@@ -18,7 +18,7 @@ components:
   lidarr:
     image:
       repository: ghcr.io/home-operations/lidarr
-      tag: "3.1.2"
+      tag: "3.1.2@sha256:9df1e14c8e09745f23a36c0cc6adcf69665b379aae60e5a7cb9bda27961ef4e7"
       pullPolicy: IfNotPresent
 
     service:
@@ -130,7 +130,7 @@ components:
   exportarr:
     image:
       repository: ghcr.io/onedr0p/exportarr
-      tag: "v2.3.0"
+      tag: "v2.3.0@sha256:af535d94061cf97a52e1661945ffba78c03f9443eae7c0da1a80a5a4be56b520"
       pullPolicy: IfNotPresent
 
     args:

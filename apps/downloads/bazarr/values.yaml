@@ -18,7 +18,7 @@ components:
   bazarr:
     image:
       repository: ghcr.io/home-operations/bazarr
-      tag: "1.5.6"
+      tag: "1.5.6@sha256:80cb090162b47ea1bfb499d742b45a460b282f17ffefa4c01d518a5c8d52a5a4"
       pullPolicy: IfNotPresent
 
     service:
@@ -131,7 +131,7 @@ components:
   exportarr:
     image:
       repository: ghcr.io/onedr0p/exportarr
-      tag: "v2.3.0"
+      tag: "v2.3.0@sha256:af535d94061cf97a52e1661945ffba78c03f9443eae7c0da1a80a5a4be56b520"
       pullPolicy: IfNotPresent
 
     args:

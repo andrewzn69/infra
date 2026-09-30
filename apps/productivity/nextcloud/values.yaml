@@ -18,7 +18,7 @@ components:
   nextcloud:
     image:
       repository: nextcloud
-      tag: "35.0.0-fpm"
+      tag: "35.0.0-fpm@sha256:1b4effee41f8c16ba43b2c8f44d4441b4ea35cea452ecb49071dab1f784059a8"
       pullPolicy: IfNotPresent
 
     replicaCount: 1
@@ -266,7 +266,7 @@ components:
         # entrypoint writes redis-session.ini into conf.d, so neither dir can
         # stay read-only. zz-pool.conf sorts after www.conf and wins
         - name: seed-php-conf
-          image: nextcloud:35.0.0-fpm
+          image: nextcloud:35.0.0-fpm@sha256:1b4effee41f8c16ba43b2c8f44d4441b4ea35cea452ecb49071dab1f784059a8
           command:
             - sh
             - -c
@@ -330,7 +330,7 @@ components:
     sidecars:
       custom:
         - name: nginx
-          image: nginxinc/nginx-unprivileged:1.30.5-alpine
+          image: nginxinc/nginx-unprivileged:1.30.5-alpine@sha256:ed04ec1ff34502c339ee5c3ae3f855442398edc1d05591e2b98981dcbbd20b1e
           volumeMounts:
             - name: html
               mountPath: /var/www/html
@@ -361,7 +361,7 @@ components:
 
         # the image's own /cron.sh is busybox crond and needs root
         - name: cron
-          image: nextcloud:35.0.0-fpm
+          image: nextcloud:35.0.0-fpm@sha256:1b4effee41f8c16ba43b2c8f44d4441b4ea35cea452ecb49071dab1f784059a8
           command:
             - sh
             - -c
@@ -415,7 +415,7 @@ components:
   valkey:
     image:
       repository: valkey/valkey
-      tag: "9.1.2-alpine"
+      tag: "9.1.2-alpine@sha256:48332870af354a799964c0012ae1194a0bf2bf894eb508f945810596dc2d8d11"
       pullPolicy: IfNotPresent
 
     replicaCount: 1

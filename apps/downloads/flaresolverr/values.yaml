@@ -4,7 +4,7 @@ components:
   flaresolverr:
     image:
       repository: ghcr.io/flaresolverr/flaresolverr
-      tag: "v3.5.2"
+      tag: "v3.5.2@sha256:c80ae007ce2ccdcd217a12426e4f039ef763ff90738c808d38810c3e59323767"
       pullPolicy: IfNotPresent
 
     service:
@@ -66,7 +66,7 @@ components:
       custom:
         # chromedriver is patched in place under /app, so the app runs from a writable copy
         - name: seed-app
-          image: ghcr.io/flaresolverr/flaresolverr:v3.5.2
+          image: ghcr.io/flaresolverr/flaresolverr:v3.5.2@sha256:c80ae007ce2ccdcd217a12426e4f039ef763ff90738c808d38810c3e59323767
           command:
             - sh
             - -c

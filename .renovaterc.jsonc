@@ -1,6 +1,7 @@
 {
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
 	"extends": ["config:best-practices"],
+	"assignees": ["andrewzn69"],
 	// argocd manager has no default file match
 	"argocd": {
 		"managerFilePatterns": ["/(^|/)application(set)?\\.ya?ml$/"]

@@ -26,10 +26,10 @@ spec:
             valueFiles:
               - $infra/apps/infrastructure/longhorn/values.{{name}}.yaml
         - repoURL: https://github.com/kubernetes-csi/external-snapshotter.git
-          targetRevision: v8.5.0
+          targetRevision: v8.6.0
           path: client/config/crd
         - repoURL: https://github.com/kubernetes-csi/external-snapshotter.git
-          targetRevision: v8.5.0
+          targetRevision: v8.6.0
           path: deploy/kubernetes/snapshot-controller
       destination:
         server: "{{server}}"

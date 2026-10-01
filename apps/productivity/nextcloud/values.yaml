@@ -18,7 +18,7 @@ components:
   nextcloud:
     image:
       repository: nextcloud
-      tag: "35.0.0-fpm@sha256:1b4effee41f8c16ba43b2c8f44d4441b4ea35cea452ecb49071dab1f784059a8"
+      tag: "35.0.1-fpm@sha256:97e20437843ebf8735f9e4e75220eaaf6202b1af17ef45335ec1086caa40b35f"
       pullPolicy: IfNotPresent
 
     replicaCount: 1
@@ -266,7 +266,7 @@ components:
         # entrypoint writes redis-session.ini into conf.d, so neither dir can
         # stay read-only. zz-pool.conf sorts after www.conf and wins
         - name: seed-php-conf
-          image: nextcloud:35.0.0-fpm@sha256:1b4effee41f8c16ba43b2c8f44d4441b4ea35cea452ecb49071dab1f784059a8
+          image: nextcloud:35.0.1-fpm@sha256:97e20437843ebf8735f9e4e75220eaaf6202b1af17ef45335ec1086caa40b35f
           command:
             - sh
             - -c
@@ -361,7 +361,7 @@ components:
 
         # the image's own /cron.sh is busybox crond and needs root
         - name: cron
-          image: nextcloud:35.0.0-fpm@sha256:1b4effee41f8c16ba43b2c8f44d4441b4ea35cea452ecb49071dab1f784059a8
+          image: nextcloud:35.0.1-fpm@sha256:97e20437843ebf8735f9e4e75220eaaf6202b1af17ef45335ec1086caa40b35f
           command:
             - sh
             - -c

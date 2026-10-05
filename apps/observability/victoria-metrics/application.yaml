@@ -13,7 +13,7 @@ spec:
       ref: infra
     - repoURL: https://victoriametrics.github.io/helm-charts
       chart: victoria-metrics-single
-      targetRevision: 0.45.0
+      targetRevision: 0.48.0
       helm:
         releaseName: victoria-metrics
         valueFiles:

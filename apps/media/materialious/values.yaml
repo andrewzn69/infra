@@ -18,7 +18,7 @@ components:
   materialious:
     image:
       repository: docker.io/wardpearce/materialious-full
-      tag: "1.16.31@sha256:de0fd0bdbfe8b26f7649c2f66e7959f24e4f92a67ae5b1dd4ca4737d11c12b4f"
+      tag: "1.18.9@sha256:554ea7f58b2e58bd4e202334cae85121e6c67ab3d4e13d687670403bbcbc2edf"
       pullPolicy: IfNotPresent
 
     service:

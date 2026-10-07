@@ -69,10 +69,15 @@ components:
       limits:
         memory: 6Gi
 
-    securityContext:
+    podSecurityContext:
       runAsUser: 10001
       runAsGroup: 10001
+      fsGroup: 10001
       runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true
       capabilities:
@@ -195,10 +200,14 @@ components:
       limits:
         memory: 128Mi
 
-    securityContext:
+    podSecurityContext:
       runAsUser: 65532
       runAsGroup: 65532
       runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true
       capabilities:
@@ -285,10 +294,14 @@ components:
       limits:
         memory: 128Mi
 
-    securityContext:
+    podSecurityContext:
       runAsUser: 65532
       runAsGroup: 65532
       runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true
       capabilities:

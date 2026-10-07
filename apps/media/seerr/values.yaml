@@ -43,6 +43,9 @@ components:
       emptyDir:
         - name: tmp
           mountPath: /tmp
+        # the entrypoint runs npm, which writes its cache and logs under HOME
+        - name: npm
+          mountPath: /home/node/.npm
 
     resources:
       requests:
@@ -62,6 +65,7 @@ components:
 
     securityContext:
       allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
       capabilities:
         drop:
           - ALL

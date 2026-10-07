@@ -21,8 +21,28 @@ components:
       tag: "8.7.2@sha256:6e69e009e1cd7493ff6093e8e187b5d3788c75b4a2c0c5127b6a1beda1c19728"
       pullPolicy: IfNotPresent
 
+    replicaCount: 1
+
     service:
       enabled: false
+
+    env:
+      - name: TZ
+        value: "Europe/Prague"
+      - name: CRON_SCHEDULE
+        value: "@daily"
+      - name: RECYCLARR_CREATE_CONFIG
+        value: "false"
+      - name: RADARR_API_KEY
+        valueFrom:
+          secretKeyRef:
+            name: recyclarr
+            key: radarr_api_key
+      - name: SONARR_API_KEY
+        valueFrom:
+          secretKeyRef:
+            name: recyclarr
+            key: sonarr_api_key
 
     volumes:
       pvc:
@@ -46,23 +66,20 @@ components:
       limits:
         memory: 128Mi
 
-    env:
-      - name: TZ
-        value: "Europe/Prague"
-      - name: CRON_SCHEDULE
-        value: "@daily"
-      - name: RECYCLARR_CREATE_CONFIG
-        value: "false"
-      - name: RADARR_API_KEY
-        valueFrom:
-          secretKeyRef:
-            name: recyclarr
-            key: radarr_api_key
-      - name: SONARR_API_KEY
-        valueFrom:
-          secretKeyRef:
-            name: recyclarr
-            key: sonarr_api_key
+    podSecurityContext:
+      runAsUser: 10001
+      runAsGroup: 10001
+      fsGroup: 10001
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
 
     configMap:
       enabled: true
@@ -141,19 +158,6 @@ components:
                 episodes:
                   rename: true
                   # file format is owned in the app, same reason as radarr
-
-    replicaCount: 1
-
-    securityContext:
-      runAsUser: 10001
-      runAsGroup: 10001
-      fsGroup: 10001
-      runAsNonRoot: true
-      allowPrivilegeEscalation: false
-      readOnlyRootFilesystem: true
-      capabilities:
-        drop:
-          - ALL
 
     initContainers:
       fixPermissions:

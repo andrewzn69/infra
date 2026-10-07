@@ -21,6 +21,8 @@ components:
       tag: "2.3.7@sha256:b9557d772c974901aed9285189d904b613f1f07750fca930eecfe78544bd3d48"
       pullPolicy: IfNotPresent
 
+    replicaCount: 1
+
     service:
       type: ClusterIP
       port: 9696
@@ -36,6 +38,28 @@ components:
       paths:
         - path: /
           pathType: PathPrefix
+
+    env:
+      - name: TZ
+        value: "Europe/Prague"
+      - name: PROWLARR__POSTGRES__HOST
+        value: "postgres-rw.database.svc.cluster.local"
+      - name: PROWLARR__POSTGRES__PORT
+        value: "5432"
+      - name: PROWLARR__POSTGRES__MAINDB
+        value: "prowlarr"
+      - name: PROWLARR__POSTGRES__USER
+        valueFrom:
+          secretKeyRef:
+            name: prowlarr
+            key: username
+      - name: PROWLARR__POSTGRES__PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: prowlarr
+            key: password
+      - name: PROWLARR__LOG__DBENABLED
+        value: "False"
 
     volumes:
       pvc:
@@ -61,35 +85,15 @@ components:
       limits:
         memory: 768Mi
 
-    env:
-      - name: TZ
-        value: "Europe/Prague"
-      - name: PROWLARR__POSTGRES__HOST
-        value: "postgres-rw.database.svc.cluster.local"
-      - name: PROWLARR__POSTGRES__PORT
-        value: "5432"
-      - name: PROWLARR__POSTGRES__MAINDB
-        value: "prowlarr"
-      - name: PROWLARR__POSTGRES__USER
-        valueFrom:
-          secretKeyRef:
-            name: prowlarr
-            key: username
-      - name: PROWLARR__POSTGRES__PASSWORD
-        valueFrom:
-          secretKeyRef:
-            name: prowlarr
-            key: password
-      - name: PROWLARR__LOG__DBENABLED
-        value: "False"
-
-    replicaCount: 1
-
-    securityContext:
+    podSecurityContext:
       runAsUser: 10001
       runAsGroup: 10001
       fsGroup: 10001
       runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true
       capabilities:
@@ -120,6 +124,8 @@ components:
       tag: "v2.3.0@sha256:af535d94061cf97a52e1661945ffba78c03f9443eae7c0da1a80a5a4be56b520"
       pullPolicy: IfNotPresent
 
+    replicaCount: 1
+
     args:
       - prowlarr
 
@@ -136,13 +142,6 @@ components:
     commonAnnotations:
       prometheus.io/scrape: "true"
 
-    resources:
-      requests:
-        memory: 32Mi
-        cpu: 5m
-      limits:
-        memory: 128Mi
-
     env:
       - name: PORT
         value: "9707"
@@ -154,12 +153,21 @@ components:
             name: prowlarr
             key: API_KEY
 
-    replicaCount: 1
+    resources:
+      requests:
+        memory: 32Mi
+        cpu: 5m
+      limits:
+        memory: 128Mi
 
-    securityContext:
+    podSecurityContext:
       runAsUser: 65532
       runAsGroup: 65532
       runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true
       capabilities:

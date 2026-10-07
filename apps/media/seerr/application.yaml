@@ -14,7 +14,7 @@ spec:
       targetRevision: HEAD
       ref: infra
     - repoURL: oci://ghcr.io/andrewzn69/app-template
-      targetRevision: 1.2.0
+      targetRevision: 3.5.0
       path: .
       helm:
         releaseName: seerr

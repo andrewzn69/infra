@@ -32,6 +32,26 @@ components:
         - path: /
           pathType: PathPrefix
 
+    env:
+      - name: TZ
+        value: "Europe/Prague"
+      # s6 starts as root and drops to these, it will match media ownership
+      - name: PUID
+        value: "1000"
+      - name: PGID
+        value: "1000"
+      - name: serverIP
+        value: "0.0.0.0"
+      - name: serverPort
+        value: "8266"
+      - name: webUIPort
+        value: "8265"
+      # runs the node inside the server container, no second deployment
+      - name: internalNode
+        value: "true"
+      - name: nodeName
+        value: "vizima"
+
     volumes:
       pvc:
         # database, plugins and scan results are rebuildable, so no backup labels
@@ -75,31 +95,13 @@ components:
       limits:
         memory: 2Gi
 
-    env:
-      - name: TZ
-        value: "Europe/Prague"
-      # s6 starts as root and drops to these, it will match media ownership
-      - name: PUID
-        value: "1000"
-      - name: PGID
-        value: "1000"
-      - name: serverIP
-        value: "0.0.0.0"
-      - name: serverPort
-        value: "8266"
-      - name: webUIPort
-        value: "8265"
-      # runs the node inside the server container, no second deployment
-      - name: internalNode
-        value: "true"
-      - name: nodeName
-        value: "vizima"
-
     # entrypoint chowns /app and /temp as root b4 dropping to puid/pgid
     podSecurityContext:
       fsGroup: 1000
       fsGroupChangePolicy: OnRootMismatch
 
+    # s6 runs as pid 1 under root, creates the puid user and fixes ownership before
+    # dropping to it, so non-root, a read-only rootfs and dropping caps all break it
     securityContext:
       allowPrivilegeEscalation: false
 
@@ -144,6 +146,10 @@ components:
       prometheus.io/scrape: "true"
       prometheus.io/port: "9090"
 
+    env:
+      - name: TDARR_URL
+        value: "http://tdarr.downloads.svc.cluster.local:8265"
+
     resources:
       requests:
         memory: 32Mi
@@ -151,14 +157,14 @@ components:
       limits:
         memory: 128Mi
 
-    env:
-      - name: TDARR_URL
-        value: "http://tdarr.downloads.svc.cluster.local:8265"
-
-    securityContext:
+    podSecurityContext:
       runAsUser: 65532
       runAsGroup: 65532
       runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true
       capabilities:

@@ -24,14 +24,6 @@ components:
           targetPort: 30033
           protocol: TCP
 
-    volumes:
-      pvc:
-        - name: data
-          mountPath: /var/tsserver
-          size: 5Gi
-          accessMode: ReadWriteOnce
-          storageClassName: longhorn
-
     env:
       - name: TSSERVER_LICENSE_ACCEPTED
         value: "accept"
@@ -39,6 +31,14 @@ components:
         value: "true"
       - name: TSSERVER_FILE_TRANSFER_IP
         value: "0.0.0.0"
+
+    volumes:
+      pvc:
+        - name: data
+          mountPath: /var/tsserver
+          size: 5Gi
+          accessMode: ReadWriteOnce
+          storageClassName: longhorn
 
     resources:
       requests:

@@ -21,6 +21,8 @@ components:
       tag: "5.1.4@sha256:bb82ad6668f8eda1d0fcce6c1341498bfa879155bb1295cd9d314a2c35c07a01"
       pullPolicy: IfNotPresent
 
+    replicaCount: 1
+
     service:
       type: ClusterIP
       port: 8080
@@ -36,6 +38,12 @@ components:
       paths:
         - path: /
           pathType: PathPrefix
+
+    env:
+      - name: TZ
+        value: "Europe/Prague"
+      - name: WEBUI_PORT
+        value: "8080"
 
     volumes:
       pvc:
@@ -61,18 +69,15 @@ components:
       limits:
         memory: 6Gi
 
-    env:
-      - name: TZ
-        value: "Europe/Prague"
-      - name: WEBUI_PORT
-        value: "8080"
-
-    replicaCount: 1
-
-    securityContext:
+    podSecurityContext:
       runAsUser: 10001
       runAsGroup: 10001
+      fsGroup: 10001
       runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true
       capabilities:
@@ -159,6 +164,8 @@ components:
       tag: "0.1.0@sha256:96c505ac2829b10ad9e813c6644f19ef81629d79d1682838f950b20d7e7d166f"
       pullPolicy: IfNotPresent
 
+    replicaCount: 1
+
     service:
       type: ClusterIP
       port: 9714
@@ -171,13 +178,6 @@ components:
 
     commonAnnotations:
       prometheus.io/scrape: "true"
-
-    resources:
-      requests:
-        memory: 32Mi
-        cpu: 10m
-      limits:
-        memory: 128Mi
 
     env:
       - name: QBIT_URL
@@ -193,12 +193,21 @@ components:
             name: qbittorrent
             key: QBIT_PASSWORD
 
-    replicaCount: 1
+    resources:
+      requests:
+        memory: 32Mi
+        cpu: 10m
+      limits:
+        memory: 128Mi
 
-    securityContext:
+    podSecurityContext:
       runAsUser: 65532
       runAsGroup: 65532
       runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true
       capabilities:
@@ -247,6 +256,8 @@ components:
       tag: "v2.0.3@sha256:bc4fa09481634ee894ebfb4d47c8aa239a32a12567b043afa01fa42a3075d1a5"
       pullPolicy: IfNotPresent
 
+    replicaCount: 1
+
     service:
       type: ClusterIP
       port: 8090
@@ -259,13 +270,6 @@ components:
 
     commonAnnotations:
       prometheus.io/scrape: "true"
-
-    resources:
-      requests:
-        memory: 32Mi
-        cpu: 10m
-      limits:
-        memory: 128Mi
 
     env:
       - name: QBITTORRENT_BASE_URL
@@ -283,12 +287,21 @@ components:
       - name: EXPORTER_PORT
         value: "8090"
 
-    replicaCount: 1
+    resources:
+      requests:
+        memory: 32Mi
+        cpu: 10m
+      limits:
+        memory: 128Mi
 
-    securityContext:
+    podSecurityContext:
       runAsUser: 65532
       runAsGroup: 65532
       runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true
       capabilities:

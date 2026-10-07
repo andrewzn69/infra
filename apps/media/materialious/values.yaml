@@ -21,6 +21,8 @@ components:
       tag: "1.16.31@sha256:de0fd0bdbfe8b26f7649c2f66e7959f24e4f92a67ae5b1dd4ca4737d11c12b4f"
       pullPolicy: IfNotPresent
 
+    replicaCount: 0
+
     service:
       type: ClusterIP
       port: 3000
@@ -36,23 +38,6 @@ components:
       paths:
         - path: /
           pathType: PathPrefix
-
-    volumes:
-      emptyDir:
-        - name: tmp
-          mountPath: /tmp
-        - name: nginx-cache
-          mountPath: /var/cache/nginx
-        - name: nginx-run
-          mountPath: /run
-
-    resources:
-      requests:
-        memory: 128Mi
-        cpu: 50m
-      limits:
-        memory: 512Mi
-        cpu: 500m
 
     env:
       - name: TZ
@@ -86,13 +71,32 @@ components:
       - name: PUBLIC_DEFAULT_DEARROW_THUMBNAIL_INSTANCE
         value: "https://dearrow-thumb.ajay.app"
 
-    replicaCount: 0
+    volumes:
+      emptyDir:
+        - name: tmp
+          mountPath: /tmp
+        - name: nginx-cache
+          mountPath: /var/cache/nginx
+        - name: nginx-run
+          mountPath: /run
 
-    securityContext:
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 50m
+      limits:
+        memory: 512Mi
+        cpu: 500m
+
+    podSecurityContext:
       runAsUser: 10001
       runAsGroup: 10001
       fsGroup: 10001
       runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true
       capabilities:

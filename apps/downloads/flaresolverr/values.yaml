@@ -7,6 +7,8 @@ components:
       tag: "v3.5.2@sha256:c80ae007ce2ccdcd217a12426e4f039ef763ff90738c808d38810c3e59323767"
       pullPolicy: IfNotPresent
 
+    replicaCount: 1
+
     service:
       type: ClusterIP
       port: 8191
@@ -16,6 +18,15 @@ components:
 
     gateway:
       enabled: false
+
+    env:
+      - name: TZ
+        value: "Europe/Prague"
+      - name: LOG_LEVEL
+        value: "info"
+      # chromium and the driver patcher write under HOME, which has to be the seeded dir
+      - name: HOME
+        value: "/app"
 
     volumes:
       emptyDir:
@@ -30,17 +41,6 @@ components:
         cpu: 10m
       limits:
         memory: 1Gi
-
-    env:
-      - name: TZ
-        value: "Europe/Prague"
-      - name: LOG_LEVEL
-        value: "info"
-      # chromium and the driver patcher write under HOME, which has to be the seeded dir
-      - name: HOME
-        value: "/app"
-
-    replicaCount: 1
 
     podSecurityContext:
       runAsUser: 10001

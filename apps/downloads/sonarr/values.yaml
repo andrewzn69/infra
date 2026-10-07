@@ -21,6 +21,8 @@ components:
       tag: "4.0.20@sha256:1f19eb5e0f421418c1a956bbe01310a0141423afe28bd9a4b1dcb8629ff2bce2"
       pullPolicy: IfNotPresent
 
+    replicaCount: 1
+
     service:
       type: ClusterIP
       port: 8989
@@ -36,6 +38,28 @@ components:
       paths:
         - path: /
           pathType: PathPrefix
+
+    env:
+      - name: TZ
+        value: "Europe/Prague"
+      - name: SONARR__POSTGRES__HOST
+        value: "postgres-rw.database.svc.cluster.local"
+      - name: SONARR__POSTGRES__PORT
+        value: "5432"
+      - name: SONARR__POSTGRES__MAINDB
+        value: "sonarr"
+      - name: SONARR__POSTGRES__USER
+        valueFrom:
+          secretKeyRef:
+            name: sonarr
+            key: username
+      - name: SONARR__POSTGRES__PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: sonarr
+            key: password
+      - name: SONARR__LOG__DBENABLED
+        value: "False"
 
     volumes:
       pvc:
@@ -74,35 +98,15 @@ components:
       limits:
         memory: 1Gi
 
-    env:
-      - name: TZ
-        value: "Europe/Prague"
-      - name: SONARR__POSTGRES__HOST
-        value: "postgres-rw.database.svc.cluster.local"
-      - name: SONARR__POSTGRES__PORT
-        value: "5432"
-      - name: SONARR__POSTGRES__MAINDB
-        value: "sonarr"
-      - name: SONARR__POSTGRES__USER
-        valueFrom:
-          secretKeyRef:
-            name: sonarr
-            key: username
-      - name: SONARR__POSTGRES__PASSWORD
-        valueFrom:
-          secretKeyRef:
-            name: sonarr
-            key: password
-      - name: SONARR__LOG__DBENABLED
-        value: "False"
-
-    replicaCount: 1
-
-    securityContext:
+    podSecurityContext:
       runAsUser: 10001
       runAsGroup: 10001
       fsGroup: 10001
       runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true
       capabilities:
@@ -133,6 +137,8 @@ components:
       tag: "v2.3.0@sha256:af535d94061cf97a52e1661945ffba78c03f9443eae7c0da1a80a5a4be56b520"
       pullPolicy: IfNotPresent
 
+    replicaCount: 1
+
     args:
       - sonarr
 
@@ -149,13 +155,6 @@ components:
     commonAnnotations:
       prometheus.io/scrape: "true"
 
-    resources:
-      requests:
-        memory: 32Mi
-        cpu: 5m
-      limits:
-        memory: 128Mi
-
     env:
       - name: PORT
         value: "9707"
@@ -169,12 +168,21 @@ components:
       - name: ENABLE_ADDITIONAL_METRICS
         value: "true"
 
-    replicaCount: 1
+    resources:
+      requests:
+        memory: 32Mi
+        cpu: 5m
+      limits:
+        memory: 128Mi
 
-    securityContext:
+    podSecurityContext:
       runAsUser: 65532
       runAsGroup: 65532
       runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true
       capabilities:

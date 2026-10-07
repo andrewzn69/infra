@@ -68,11 +68,15 @@ components:
         memory: 512Mi
         cpu: 200m
 
-    securityContext:
+    podSecurityContext:
       runAsUser: 10001
       runAsGroup: 10001
       fsGroup: 10001
       runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    securityContext:
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true
       capabilities:

@@ -420,13 +420,6 @@ components:
 
     replicaCount: 1
 
-    service:
-      type: ClusterIP
-      port: 6379
-      targetPort: 6379
-      protocol: TCP
-      name: redis
-
     command:
       - valkey-server
 
@@ -437,6 +430,13 @@ components:
       - "no"
       - --requirepass
       - $(VALKEY_PASSWORD)
+
+    service:
+      type: ClusterIP
+      port: 6379
+      targetPort: 6379
+      protocol: TCP
+      name: redis
 
     env:
       - name: VALKEY_PASSWORD

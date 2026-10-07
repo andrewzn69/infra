@@ -21,6 +21,8 @@ components:
       tag: "1.5.6@sha256:80cb090162b47ea1bfb499d742b45a460b282f17ffefa4c01d518a5c8d52a5a4"
       pullPolicy: IfNotPresent
 
+    replicaCount: 0
+
     service:
       type: ClusterIP
       port: 6767
@@ -36,6 +38,28 @@ components:
       paths:
         - path: /
           pathType: PathPrefix
+
+    env:
+      - name: TZ
+        value: "Europe/Prague"
+      - name: POSTGRES_ENABLED
+        value: "True"
+      - name: POSTGRES_HOST
+        value: "postgres-rw.database.svc.cluster.local"
+      - name: POSTGRES_PORT
+        value: "5432"
+      - name: POSTGRES_DATABASE
+        value: "bazarr"
+      - name: POSTGRES_USERNAME
+        valueFrom:
+          secretKeyRef:
+            name: bazarr
+            key: username
+      - name: POSTGRES_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: bazarr
+            key: password
 
     volumes:
       pvc:
@@ -75,30 +99,6 @@ components:
         memory: 1Gi
         cpu: 300m
 
-    env:
-      - name: TZ
-        value: "Europe/Prague"
-      - name: POSTGRES_ENABLED
-        value: "True"
-      - name: POSTGRES_HOST
-        value: "postgres-rw.database.svc.cluster.local"
-      - name: POSTGRES_PORT
-        value: "5432"
-      - name: POSTGRES_DATABASE
-        value: "bazarr"
-      - name: POSTGRES_USERNAME
-        valueFrom:
-          secretKeyRef:
-            name: bazarr
-            key: username
-      - name: POSTGRES_PASSWORD
-        valueFrom:
-          secretKeyRef:
-            name: bazarr
-            key: password
-
-    replicaCount: 0
-
     securityContext:
       runAsUser: 10001
       runAsGroup: 10001
@@ -134,6 +134,8 @@ components:
       tag: "v2.3.0@sha256:af535d94061cf97a52e1661945ffba78c03f9443eae7c0da1a80a5a4be56b520"
       pullPolicy: IfNotPresent
 
+    replicaCount: 1
+
     args:
       - bazarr
 
@@ -150,13 +152,6 @@ components:
     commonAnnotations:
       prometheus.io/scrape: "true"
 
-    resources:
-      requests:
-        memory: 32Mi
-        cpu: 5m
-      limits:
-        memory: 128Mi
-
     env:
       - name: PORT
         value: "9707"
@@ -168,7 +163,12 @@ components:
             name: bazarr
             key: API_KEY
 
-    replicaCount: 1
+    resources:
+      requests:
+        memory: 32Mi
+        cpu: 5m
+      limits:
+        memory: 128Mi
 
     securityContext:
       runAsUser: 65532

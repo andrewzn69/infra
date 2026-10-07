@@ -32,6 +32,26 @@ components:
         - path: /
           pathType: PathPrefix
 
+    env:
+      - name: TZ
+        value: "Europe/Prague"
+      # s6 starts as root and drops to these, it will match media ownership
+      - name: PUID
+        value: "1000"
+      - name: PGID
+        value: "1000"
+      - name: serverIP
+        value: "0.0.0.0"
+      - name: serverPort
+        value: "8266"
+      - name: webUIPort
+        value: "8265"
+      # runs the node inside the server container, no second deployment
+      - name: internalNode
+        value: "true"
+      - name: nodeName
+        value: "vizima"
+
     volumes:
       pvc:
         # database, plugins and scan results are rebuildable, so no backup labels
@@ -74,26 +94,6 @@ components:
         cpu: 200m
       limits:
         memory: 2Gi
-
-    env:
-      - name: TZ
-        value: "Europe/Prague"
-      # s6 starts as root and drops to these, it will match media ownership
-      - name: PUID
-        value: "1000"
-      - name: PGID
-        value: "1000"
-      - name: serverIP
-        value: "0.0.0.0"
-      - name: serverPort
-        value: "8266"
-      - name: webUIPort
-        value: "8265"
-      # runs the node inside the server container, no second deployment
-      - name: internalNode
-        value: "true"
-      - name: nodeName
-        value: "vizima"
 
     # entrypoint chowns /app and /temp as root b4 dropping to puid/pgid
     podSecurityContext:
@@ -144,16 +144,16 @@ components:
       prometheus.io/scrape: "true"
       prometheus.io/port: "9090"
 
+    env:
+      - name: TDARR_URL
+        value: "http://tdarr.downloads.svc.cluster.local:8265"
+
     resources:
       requests:
         memory: 32Mi
         cpu: 5m
       limits:
         memory: 128Mi
-
-    env:
-      - name: TDARR_URL
-        value: "http://tdarr.downloads.svc.cluster.local:8265"
 
     securityContext:
       runAsUser: 65532

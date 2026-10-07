@@ -16,6 +16,22 @@ components:
       protocol: TCP
       name: http
 
+    # radarr and sonarr run on vizima, reachable only through egress proxy
+    hostAliases:
+      - ip: 10.112.67.67
+        hostnames:
+          - radarr.internal.zemn.xyz
+          - sonarr.internal.zemn.xyz
+
+    env:
+      - name: TZ
+        value: "Europe/Prague"
+      - name: LOG_LEVEL
+        value: "info"
+      # TODO: change to postgres after deploying cnpg on novigrad
+      - name: DB_TYPE
+        value: "sqlite"
+
     volumes:
       pvc:
         - name: config
@@ -27,13 +43,6 @@ components:
       emptyDir:
         - name: tmp
           mountPath: /tmp
-
-    # radarr and sonarr run on vizima, reachable only through egress proxy
-    hostAliases:
-      - ip: 10.112.67.67
-        hostnames:
-          - radarr.internal.zemn.xyz
-          - sonarr.internal.zemn.xyz
 
     resources:
       requests:
@@ -56,12 +65,3 @@ components:
       capabilities:
         drop:
           - ALL
-
-    env:
-      - name: TZ
-        value: "Europe/Prague"
-      - name: LOG_LEVEL
-        value: "info"
-      # TODO: change to postgres after deploying cnpg on novigrad
-      - name: DB_TYPE
-        value: "sqlite"

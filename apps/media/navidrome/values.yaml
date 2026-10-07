@@ -7,6 +7,8 @@ components:
       tag: "0.64.2@sha256:38dc2727bfcfd5ede290f8ada114fc90368146f265ae4701ddddbcbe2a44ee52"
       pullPolicy: IfNotPresent
 
+    replicaCount: 0
+
     service:
       type: ClusterIP
       port: 4533
@@ -22,6 +24,18 @@ components:
       paths:
         - path: /
           pathType: PathPrefix
+
+    env:
+      - name: ND_MUSICFOLDER
+        value: "/music"
+      - name: ND_DATAFOLDER
+        value: "/data"
+      - name: ND_PORT
+        value: "4533"
+      - name: ND_LOGLEVEL
+        value: "info"
+      - name: ND_SCANSCHEDULE
+        value: "@hourly"
 
     volumes:
       pvc:
@@ -53,20 +67,6 @@ components:
       limits:
         memory: 512Mi
         cpu: 200m
-
-    env:
-      - name: ND_MUSICFOLDER
-        value: "/music"
-      - name: ND_DATAFOLDER
-        value: "/data"
-      - name: ND_PORT
-        value: "4533"
-      - name: ND_LOGLEVEL
-        value: "info"
-      - name: ND_SCANSCHEDULE
-        value: "@hourly"
-
-    replicaCount: 0
 
     securityContext:
       runAsUser: 10001

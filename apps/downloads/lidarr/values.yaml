@@ -21,6 +21,8 @@ components:
       tag: "3.1.6@sha256:b4c60ae24ff264bcdfd8d5562982d99105c17b82c28a6986498f6fb215b7f42e"
       pullPolicy: IfNotPresent
 
+    replicaCount: 1
+
     service:
       type: ClusterIP
       port: 8686
@@ -36,6 +38,28 @@ components:
       paths:
         - path: /
           pathType: PathPrefix
+
+    env:
+      - name: TZ
+        value: "Europe/Prague"
+      - name: LIDARR__POSTGRES__HOST
+        value: "postgres-rw.database.svc.cluster.local"
+      - name: LIDARR__POSTGRES__PORT
+        value: "5432"
+      - name: LIDARR__POSTGRES__MAINDB
+        value: "lidarr"
+      - name: LIDARR__POSTGRES__USER
+        valueFrom:
+          secretKeyRef:
+            name: lidarr
+            key: username
+      - name: LIDARR__POSTGRES__PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: lidarr
+            key: password
+      - name: LIDARR__LOG__DBENABLED
+        value: "False"
 
     volumes:
       pvc:
@@ -74,30 +98,6 @@ components:
       limits:
         memory: 2Gi
 
-    env:
-      - name: TZ
-        value: "Europe/Prague"
-      - name: LIDARR__POSTGRES__HOST
-        value: "postgres-rw.database.svc.cluster.local"
-      - name: LIDARR__POSTGRES__PORT
-        value: "5432"
-      - name: LIDARR__POSTGRES__MAINDB
-        value: "lidarr"
-      - name: LIDARR__POSTGRES__USER
-        valueFrom:
-          secretKeyRef:
-            name: lidarr
-            key: username
-      - name: LIDARR__POSTGRES__PASSWORD
-        valueFrom:
-          secretKeyRef:
-            name: lidarr
-            key: password
-      - name: LIDARR__LOG__DBENABLED
-        value: "False"
-
-    replicaCount: 1
-
     securityContext:
       runAsUser: 10001
       runAsGroup: 10001
@@ -133,6 +133,8 @@ components:
       tag: "v2.3.0@sha256:af535d94061cf97a52e1661945ffba78c03f9443eae7c0da1a80a5a4be56b520"
       pullPolicy: IfNotPresent
 
+    replicaCount: 1
+
     args:
       - lidarr
 
@@ -149,13 +151,6 @@ components:
     commonAnnotations:
       prometheus.io/scrape: "true"
 
-    resources:
-      requests:
-        memory: 32Mi
-        cpu: 5m
-      limits:
-        memory: 128Mi
-
     env:
       - name: PORT
         value: "9707"
@@ -167,7 +162,12 @@ components:
             name: lidarr
             key: API_KEY
 
-    replicaCount: 1
+    resources:
+      requests:
+        memory: 32Mi
+        cpu: 5m
+      limits:
+        memory: 128Mi
 
     securityContext:
       runAsUser: 65532

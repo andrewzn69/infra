@@ -21,6 +21,8 @@ components:
       tag: "2026.06.09-6dec63a@sha256:3410ae6c090722a8f50decb729e9bc554bf4f52a40541ac1582d393cfcbf96ee"
       pullPolicy: IfNotPresent
 
+    replicaCount: 0
+
     service:
       type: ClusterIP
       port: 3000
@@ -36,19 +38,6 @@ components:
       paths:
         - path: /
           pathType: PathPrefix
-
-    volumes:
-      emptyDir:
-        - name: tmp
-          mountPath: /tmp
-
-    resources:
-      requests:
-        memory: 128Mi
-        cpu: 100m
-      limits:
-        memory: 512Mi
-        cpu: 1000m
 
     env:
       - name: TZ
@@ -85,7 +74,18 @@ components:
       - name: INVIDIOUS_INVIDIOUS_COMPANION
         value: '[{private_url: "http://invidious-companion.media.svc.cluster.local:8282/companion"}]'
 
-    replicaCount: 0
+    volumes:
+      emptyDir:
+        - name: tmp
+          mountPath: /tmp
+
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 100m
+      limits:
+        memory: 512Mi
+        cpu: 1000m
 
     securityContext:
       runAsUser: 1000
@@ -122,12 +122,23 @@ components:
       tag: "latest@sha256:f15bc688aedd4bbb76cc636c7cc0cfff9b2b9f0734a4b831efbda7253b180525"
       pullPolicy: IfNotPresent
 
+    replicaCount: 0
+
     service:
       type: ClusterIP
       port: 8282
       targetPort: 8282
       protocol: TCP
       name: http
+
+    env:
+      - name: TZ
+        value: "Europe/Prague"
+      - name: SERVER_SECRET_KEY
+        valueFrom:
+          secretKeyRef:
+            name: invidious
+            key: companion_key
 
     volumes:
       emptyDir:
@@ -141,17 +152,6 @@ components:
       limits:
         memory: 1Gi
         cpu: 1000m
-
-    env:
-      - name: TZ
-        value: "Europe/Prague"
-      - name: SERVER_SECRET_KEY
-        valueFrom:
-          secretKeyRef:
-            name: invidious
-            key: companion_key
-
-    replicaCount: 0
 
     securityContext:
       runAsUser: 10001

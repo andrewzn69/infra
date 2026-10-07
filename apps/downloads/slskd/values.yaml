@@ -7,6 +7,8 @@ components:
       tag: "0.25.1@sha256:ab9ed50e028b524cefdb7c1dd8ebca368a076e18441ee8ac2326473eb850b4c3"
       pullPolicy: IfNotPresent
 
+    replicaCount: 0
+
     service:
       type: ClusterIP
       port: 5030
@@ -22,6 +24,10 @@ components:
       paths:
         - path: /
           pathType: PathPrefix
+
+    env:
+      - name: SLSKD_REMOTE_CONFIGURATION
+        value: "true"
 
     volumes:
       pvc:
@@ -65,12 +71,6 @@ components:
       capabilities:
         drop:
           - ALL
-
-    env:
-      - name: SLSKD_REMOTE_CONFIGURATION
-        value: "true"
-
-    replicaCount: 0
 
     configMap:
       enabled: false

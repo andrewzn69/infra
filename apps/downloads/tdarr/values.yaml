@@ -100,6 +100,8 @@ components:
       fsGroup: 1000
       fsGroupChangePolicy: OnRootMismatch
 
+    # s6 runs as pid 1 under root, creates the puid user and fixes ownership before
+    # dropping to it, so non-root, a read-only rootfs and dropping caps all break it
     securityContext:
       allowPrivilegeEscalation: false
 

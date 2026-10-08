@@ -132,7 +132,7 @@ components:
   web:
     image:
       repository: ghcr.io/usekaneo/web
-      tag: "2.24.0@sha256:97e6313d5355703b856478b219ea5690cb55ec5da48b161cd25642b6134e3bbe"
+      tag: "2.35.0@sha256:63dbb3b4d8da300f1918a0f671ef1c6e02ec6ace395f553d3d8a5f511578883d"
       pullPolicy: IfNotPresent
 
     replicaCount: 1
@@ -203,7 +203,7 @@ components:
         enabled: false
       custom:
         - name: seed
-          image: ghcr.io/usekaneo/web:2.24.0@sha256:97e6313d5355703b856478b219ea5690cb55ec5da48b161cd25642b6134e3bbe
+          image: ghcr.io/usekaneo/web:2.35.0@sha256:63dbb3b4d8da300f1918a0f671ef1c6e02ec6ace395f553d3d8a5f511578883d
           command:
             - sh
             - -c

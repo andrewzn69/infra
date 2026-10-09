@@ -13,7 +13,7 @@ spec:
       ref: infra
     - repoURL: https://grafana-community.github.io/helm-charts
       chart: loki
-      targetRevision: 18.11.2
+      targetRevision: 18.15.1
       helm:
         releaseName: loki
         valueFiles:

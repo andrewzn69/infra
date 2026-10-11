@@ -106,8 +106,6 @@ components:
                 secretKeyRef:
                   name: corekeeper
                   key: PLAYIT_SECRET_KEY
-            - name: RUST_LOG
-              value: "debug"
 
           resources:
             requests:

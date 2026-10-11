@@ -64,10 +64,10 @@ components:
     resources:
       requests:
         memory: 2Gi
-        cpu: 200m
+        cpu: 600m
       limits:
         memory: 3Gi
-        cpu: 400m
+        cpu: 600m
 
     podSecurityContext:
       fsGroup: 1000

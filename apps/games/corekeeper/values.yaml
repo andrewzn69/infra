@@ -63,10 +63,10 @@ components:
 
     resources:
       requests:
-        memory: 200Mi
+        memory: 2Gi
         cpu: 200m
       limits:
-        memory: 400Mi
+        memory: 3Gi
         cpu: 400m
 
     podSecurityContext:

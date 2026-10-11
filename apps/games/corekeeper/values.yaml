@@ -38,6 +38,8 @@ components:
         value: "pohankajenegr"
       - name: MAX_PLAYERS
         value: "8"
+      - name: SERVER_IP
+        value: "0.0.0.0"
       # setting a port switches the server from steam relay to direct connect
       - name: SERVER_PORT
         value: "27015"

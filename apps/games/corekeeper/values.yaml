@@ -31,6 +31,9 @@ components:
       # box64 build variant for oci
       - name: ARM64_DEVICE
         value: "adlink"
+      # steamcmd self updates to a linuxarm64 binary that does not exist
+      - name: USE_DEPOT_DOWNLOADER
+        value: "true"
       - name: WORLD_NAME
         value: "pohankajenegr"
       - name: MAX_PLAYERS

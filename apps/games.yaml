@@ -17,7 +17,7 @@ spec:
       recurse: true
       include: "**/{application,applicationset}.yaml"
   destination:
-    name: novigrad
+    name: vizima
     namespace: argocd
   syncPolicy:
     automated:

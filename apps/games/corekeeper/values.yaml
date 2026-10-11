@@ -106,6 +106,8 @@ components:
                 secretKeyRef:
                   name: corekeeper
                   key: PLAYIT_SECRET_KEY
+            - name: PLAYIT_LOG
+              value: "debug"
 
           resources:
             requests:

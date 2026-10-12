@@ -21,7 +21,7 @@ components:
       tag: "1.6.2@sha256:17dc1cff22e99694ffbfb06555526cb47a66b362b4d6c982f06b557f7caae2bb"
       pullPolicy: IfNotPresent
 
-    replicaCount: 0
+    replicaCount: 1
 
     service:
       type: ClusterIP

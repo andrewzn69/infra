@@ -330,7 +330,7 @@ components:
     sidecars:
       custom:
         - name: nginx
-          image: nginxinc/nginx-unprivileged:1.30.5-alpine@sha256:ed04ec1ff34502c339ee5c3ae3f855442398edc1d05591e2b98981dcbbd20b1e
+          image: nginxinc/nginx-unprivileged:1.31.7-alpine@sha256:378d0c32f6562f7fd9629170797f57d2b953aa09be983b3daaf4809bb039ca00
           volumeMounts:
             - name: html
               mountPath: /var/www/html

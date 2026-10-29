@@ -113,21 +113,21 @@ config:
       extra_metadata_labels: [k8s.volume.type]
   exporters:
     debug: null
-    otlphttp:
+    otlp_http:
       endpoint: http://loki.observability.svc.cluster.local:3100/otlp
       sending_queue:
         enabled: true
         storage: file_storage
       retry_on_failure:
         enabled: true
-    otlphttp/victoriametrics:
+    otlp_http/victoriametrics:
       metrics_endpoint: http://victoria-metrics-victoria-metrics-single-server.observability.svc.cluster.local:8428/opentelemetry/v1/metrics
       sending_queue:
         enabled: true
         storage: file_storage
       retry_on_failure:
         enabled: true
-    otlphttp/victoriatraces:
+    otlp_http/victoriatraces:
       traces_endpoint: http://victoria-traces-vt-single-server.observability.svc.cluster.local:10428/insert/opentelemetry/v1/traces
       sending_queue:
         enabled: true
@@ -138,16 +138,16 @@ config:
     pipelines:
       traces:
         receivers: [otlp]
-        processors: [memory_limiter, k8sattributes, batch]
-        exporters: [otlphttp/victoriatraces]
+        processors: [memory_limiter, k8s_attributes, batch]
+        exporters: [otlp_http/victoriatraces]
       metrics:
         receivers: [kubeletstats, prometheus]
-        processors: [memory_limiter, k8sattributes, batch]
-        exporters: [otlphttp/victoriametrics]
+        processors: [memory_limiter, k8s_attributes, batch]
+        exporters: [otlp_http/victoriametrics]
       logs:
-        receivers: [filelog]
-        processors: [memory_limiter, k8sattributes, batch]
-        exporters: [otlphttp]
+        receivers: [file_log]
+        processors: [memory_limiter, k8s_attributes, batch]
+        exporters: [otlp_http]
 
 tolerations:
   - key: node-role.kubernetes.io/control-plane

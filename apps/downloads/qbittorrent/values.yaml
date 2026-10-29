@@ -152,6 +152,15 @@ components:
                 secretKeyRef:
                   name: qbittorrent
                   key: WIREGUARD_ENDPOINT_PORT
+            # a restarted container keeps the pod's network namespace, so the old tunnel rules survive and stop gluetun reconnecting
+            # has to succeed when there's nothing to delete, a failing postStart hook gets the container killed
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - "(ip rule del table 51820; ip -6 rule del table 51820) || true"
 
   peers-exporter:
     image:

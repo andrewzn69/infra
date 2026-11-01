@@ -24,7 +24,8 @@ components:
         value: "Europe/Prague"
       - name: LOG_LEVEL
         value: "info"
-      # chromium and the driver patcher write under HOME, which has to be the seeded dir
+      # chromium and the driver patcher write under HOME
+      # it has to point at the writable copy from the init container
       - name: HOME
         value: "/app"
 
@@ -64,7 +65,7 @@ components:
       fixPermissions:
         enabled: false
       custom:
-        # chromedriver is patched in place under /app, so the app runs from a writable copy
+        # chromedriver gets patched in place, so the app runs from a writable copy of its files
         - name: seed-app
           image: ghcr.io/flaresolverr/flaresolverr:v3.5.2@sha256:c80ae007ce2ccdcd217a12426e4f039ef763ff90738c808d38810c3e59323767
           command:

@@ -9,7 +9,8 @@ metadata:
     tailscale.com/tailnet-ip: "100.64.100.20"
 spec:
   type: ExternalName
-  # required field, the tailscale operator overwrites it with the proxy pod hostname
+  # kubernetes requires this field
+  # the tailscale operator replaces the value with the proxy pod's hostname
   externalName: placeholder
   ports:
     - port: 443

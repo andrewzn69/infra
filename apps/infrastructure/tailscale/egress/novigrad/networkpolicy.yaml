@@ -6,7 +6,6 @@ metadata:
   name: allow-media-to-vizima-gateway
   namespace: tailscale-system
 spec:
-  # the operator-created proxy pods, matched by labels that survive recreation
   podSelector:
     matchLabels:
       tailscale.com/parent-resource: vizima-gateway

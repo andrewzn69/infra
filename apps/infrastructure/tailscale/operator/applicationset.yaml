@@ -29,7 +29,7 @@ spec:
                 defaultTags: tag:k8s-operator
                 image:
                   repository: docker.io/tailscale/tailscale
-        # InfisicalSecret that fills operator-oauth, one file per cluster
+        # the InfisicalSecret that creates the operator-oauth secret
         - repoURL: git@github.com:andrewzn69/infra.git
           targetRevision: HEAD
           path: apps/infrastructure/tailscale/operator

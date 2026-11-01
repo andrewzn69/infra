@@ -28,7 +28,7 @@ spec:
     syncOptions:
       - CreateNamespace=true
   ignoreDifferences:
-    # cert-manager updates ClusterIssuer status at runtime - ignore to prevent permanent out of sync
+    # cert-manager updates the ClusterIssuer status while it runs
     - group: cert-manager.io
       kind: ClusterIssuer
       jsonPointers:

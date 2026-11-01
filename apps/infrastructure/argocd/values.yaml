@@ -16,7 +16,7 @@ server:
       memory: 256Mi
       cpu: 200m
   service:
-    # gw talks http2 to this port so grpc works
+    # the gateway has to use http2 on this port for grpc to work
     servicePortHttpsAppProtocol: kubernetes.io/h2c
   httproute:
     enabled: true
@@ -89,7 +89,7 @@ controller:
     limits:
       cpu: 500m
 
-# own grpcroute since the chart one targets port 80 when insecure
+# used instead of the chart's grpcroute, which targets the http port when the server runs insecure
 extraObjects:
   - apiVersion: gateway.networking.k8s.io/v1
     kind: GRPCRoute

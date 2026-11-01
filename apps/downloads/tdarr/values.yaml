@@ -35,7 +35,8 @@ components:
     env:
       - name: TZ
         value: "Europe/Prague"
-      # s6 starts as root and drops to these, it will match media ownership
+      # s6 starts as root and then switches to this user and group
+      # they match the owner of the media files
       - name: PUID
         value: "1000"
       - name: PGID
@@ -46,7 +47,7 @@ components:
         value: "8266"
       - name: webUIPort
         value: "8265"
-      # runs the node inside the server container, no second deployment
+      # the node runs inside the server container instead of a separate deployment
       - name: internalNode
         value: "true"
       - name: nodeName
@@ -54,7 +55,7 @@ components:
 
     volumes:
       pvc:
-        # database, plugins and scan results are rebuildable, so no backup labels
+        # the database, plugins and scan results can be rebuilt, so this volume has no backup labels
         - name: server
           mountPath: /app/server
           size: 5Gi
@@ -95,13 +96,15 @@ components:
       limits:
         memory: 2Gi
 
-    # entrypoint chowns /app and /temp as root b4 dropping to puid/pgid
+    # the entrypoint changes the owner of the app and temp dirs as root
+    # it then switches to the configured user and group
     podSecurityContext:
       fsGroup: 1000
       fsGroupChangePolicy: OnRootMismatch
 
-    # s6 runs as pid 1 under root, creates the puid user and fixes ownership before
-    # dropping to it, so non-root, a read-only rootfs and dropping caps all break it
+    # s6 runs as pid 1 under root
+    # it creates the user from PUID, fixes file ownership and then switches to that user
+    # running as non-root, a read only rootfs or removing capabilities would each break this
     securityContext:
       allowPrivilegeEscalation: false
 
@@ -141,7 +144,7 @@ components:
     gateway:
       enabled: false
 
-    # generic scrape job rewrites the target only when a port is given
+    # the annotated-pods scrape job only rewrites the target address when the port annotation is set
     commonAnnotations:
       prometheus.io/scrape: "true"
       prometheus.io/port: "9090"

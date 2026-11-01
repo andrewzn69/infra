@@ -6,10 +6,11 @@ defaultSettings:
   concurrentReplicaRebuildPerNodeLimit: "2"
   engineImagePodLivenessProbeTimeout: "30"
   engineImagePodLivenessProbePeriod: "60"
-  # scaled down apps leave their volumes detached, and a detached volume
-  # is skipped by recurring jobs unless this is on
+  # when an app is scaled down, its volume is detached
+  # recurring jobs skip detached volumes unless this is on
   allowRecurringJobWhileVolumeDetached: true
-  # csi-plugin is BestEffort by default and gets starved, failing its liveness probe
+  # without requests the csi plugin runs as BestEffort
+  # on a busy node it doesn't get enough cpu and fails its liveness probe
   systemManagedCSIComponentsResourceLimits: '{"longhorn-csi-plugin":{"requests":{"cpu":"10m","memory":"32Mi"},"limits":{"memory":"128Mi"}},"longhorn-liveness-probe":{"requests":{"cpu":"10m","memory":"32Mi"},"limits":{"memory":"64Mi"}}}'
 extraObjects:
   - apiVersion: longhorn.io/v1beta2
@@ -36,8 +37,8 @@ extraObjects:
       concurrency: 1
       groups:
         - backup
-  # saves pvc/pv/volume objects, so a rebuilt cluster can rebind volumes
-  # to their data instead of provisioning emtpy ones
+  # saves the pvc, pv and volume objects
+  # a rebuilt cluster can then reuse the existing data instead of creating empty volumes
   - apiVersion: longhorn.io/v1beta2
     kind: RecurringJob
     metadata:
@@ -46,7 +47,7 @@ extraObjects:
     spec:
       cron: "0 12 * * *"
       task: system-backup
-      # matches backup-daily
+      # keeps the same number of backups as the daily backup job
       retain: 7
       concurrency: 1
       parameters:
@@ -62,8 +63,9 @@ httproute:
     - longhorn.internal.zemn.xyz
 
 longhornManager:
-  # without a request the manager runs BestEffort, gets starved on a busy node,
-  # and its readiness probe timing out makes longhorn mark the node down
+  # without requests the manager runs as BestEffort
+  # on a busy node it doesn't get enough cpu
+  # its readiness probe times out, and longhorn then marks the node as down
   resources:
     requests:
       cpu: 50m

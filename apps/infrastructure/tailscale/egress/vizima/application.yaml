@@ -16,9 +16,9 @@ spec:
   destination:
     name: vizima
     namespace: tailscale-system
-  # tailscale operator overwrites spec.externalName on the egress service with the
-  # proxy pods in-cluster hostname, without this, selfHeal resets it to "placeholder"
-  # and breaks the egress route
+  # the tailscale operator sets spec.externalName on the egress service to the proxy pod's hostname in the cluster
+  # without this, selfHeal would reset it to the placeholder value from git
+  # that would break the egress route
   ignoreDifferences:
     - group: ""
       kind: Service

@@ -127,21 +127,24 @@ components:
                   name: qbittorrent
                   key: WIREGUARD_ADDRESSES
             - name: FIREWALL_INPUT_PORTS
-              value: "8080" # lets the cluster reach qbittorrent web ui
-            # allow qbittorrent to reach cluster-internal services (pods + services) through the vpn firewall
+              value: "8080" # lets the cluster reach the qbittorrent web ui
+            # lets qbittorrent reach pods and services in the cluster through the vpn firewall
             - name: FIREWALL_OUTBOUND_SUBNETS
               value: "10.244.0.0/16,10.96.0.0/12"
-            # kernelspace uses wgctrl/netlink directly - no wireguard-go, no gso/sendmmsg issues
-            # does not need src_valid_mark sysctl (only wg-quick needs it, not wgctrl)
+            # the kernel implementation uses wgctrl and netlink directly
+            # that avoids wireguard-go and its problems with gso and sendmmsg
+            # it doesn't need the src_valid_mark sysctl, only wg-quick does
             - name: WIREGUARD_IMPLEMENTATION
               value: kernelspace
-            # kernel module handles segmentation correctly, higher mtu is safe
+            # the kernel module handles segmentation correctly, so a higher mtu is safe
             - name: WIREGUARD_MTU
               value: "1320"
-            # only route ipv4 through the tunnel - pods have no ipv6, ::/0 route causes setup failure
+            # routes only ipv4 through the tunnel because pods have no ipv6
+            # an ipv6 default route would make the tunnel setup fail
             - name: WIREGUARD_ALLOWED_IPS
               value: "0.0.0.0/0"
-            # pin ipv4 endpoint - pods have no ipv6, gluetun would otherwise pick ipv6 mullvad servers and fail
+            # pins an ipv4 endpoint because pods have no ipv6
+            # otherwise gluetun would pick ipv6 mullvad servers and fail to connect
             - name: WIREGUARD_ENDPOINT_IP
               valueFrom:
                 secretKeyRef:
@@ -152,8 +155,10 @@ components:
                 secretKeyRef:
                   name: qbittorrent
                   key: WIREGUARD_ENDPOINT_PORT
-            # a restarted container keeps the pod's network namespace, so the old tunnel rules survive and stop gluetun reconnecting
-            # has to succeed when there's nothing to delete, a failing postStart hook gets the container killed
+          # a restarted container keeps the pod's network namespace
+          # the ip rules from the old tunnel stay in place and stop gluetun from reconnecting
+          # the hook's command has to succeed even when there's nothing to delete
+          # kubernetes kills the container when a postStart hook fails
           lifecycle:
             postStart:
               exec:

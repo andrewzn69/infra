@@ -16,7 +16,8 @@ components:
       protocol: TCP
       name: http
 
-    # radarr and sonarr run on vizima, reachable only through egress proxy
+    # radarr and sonarr run on vizima
+    # the only way to reach them from here is the egress proxy
     hostAliases:
       - ip: 10.112.67.67
         hostnames:
@@ -28,7 +29,7 @@ components:
         value: "Europe/Prague"
       - name: LOG_LEVEL
         value: "info"
-      # TODO: change to postgres after deploying cnpg on novigrad
+      # TODO: switch to postgres once cnpg is deployed on novigrad
       - name: DB_TYPE
         value: "sqlite"
 

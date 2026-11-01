@@ -20,7 +20,8 @@ presets:
   kubeletMetrics:
     enabled: true
 
-# daemonset mode has no service unless asked - apps need one to push traces
+# apps need a service to send traces to the collector
+# in daemonset mode the chart only creates it when this is enabled
 service:
   enabled: true
 
@@ -31,8 +32,8 @@ config:
     prometheus:
       config:
         scrape_configs:
-          # cadvisor is built into the kubelet, on its authenticated port
-          # K8S_NODE_IP is per-pod, so each agent scrapes only its own node
+          # cadvisor is built into the kubelet and served on the kubelet's authenticated port
+          # K8S_NODE_IP is set per pod, so each agent only scrapes its own node
           - job_name: cadvisor
             scheme: https
             metrics_path: /metrics/cadvisor
@@ -56,7 +57,7 @@ config:
               - source_labels: [__meta_kubernetes_pod_label_app]
                 action: keep
                 regex: longhorn-manager
-              # pod also exposes webhook and recovery ports
+              # the pod also exposes webhook and recovery ports
               - source_labels: [__meta_kubernetes_pod_container_port_name]
                 action: keep
                 regex: manager
@@ -107,9 +108,10 @@ config:
                 target_label: app
     kubeletstats:
       insecure_skip_verify: true
-      # cadvisor covers container and pod, avoid emitting both
+      # cadvisor already covers container and pod metrics, so they'd be duplicated here
       metric_groups: [node, volume]
-      # pvc name comes from the pod spec, this is what reads it
+      # the pvc name comes from the pod spec
+      # the receiver only reads it when this label is set
       extra_metadata_labels: [k8s.volume.type]
   exporters:
     debug: null

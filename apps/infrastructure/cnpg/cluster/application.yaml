@@ -4,7 +4,7 @@ metadata:
   name: cnpg-cluster
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "1" # wait for cnpg-operator to be synced first
+    argocd.argoproj.io/sync-wave: "1" # syncs after cnpg-operator
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:

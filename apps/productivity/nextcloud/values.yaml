@@ -141,7 +141,7 @@ components:
       files:
         default.conf: |
           # forked from nextcloud/helm charts/nextcloud/files/nginx.config.tpl at 81db960
-          # not auto-synced, see INFRA-118 for what was changed and how to check it
+          # INF-118 lists what was changed and how to check upstream for new changes
 
           upstream php-handler {
               server 127.0.0.1:9000;
@@ -163,7 +163,7 @@ components:
               add_header X-Permitted-Cross-Domain-Policies "none" always;
               add_header X-Robots-Tag "noindex, nofollow" always;
 
-              # php accepts 512M, nginx would otherwise reject the body at its own default
+              # matches the php upload limit, so nginx doesn't reject uploads that php accepts
               client_max_body_size 512M;
               client_body_buffer_size 512k;
 
@@ -184,7 +184,7 @@ components:
 
               index index.php index.html /index.php$request_uri;
 
-              # probes land here, no php so no trusted domain check
+              # nginx answers this path itself, so the probes skip nextcloud's trusted domain check
               location = /healthz {
                   access_log off;
                   return 200;
@@ -202,7 +202,8 @@ components:
                   access_log off;
               }
 
-              # regex exception, otherwise the hidden path rule below swallows these
+              # nginx skips the regex locations for this prefix
+              # otherwise the rule below for hidden paths would block these
               location ^~ /.well-known {
                   location = /.well-known/carddav { return 301 $real_scheme://$host/remote.php/dav/; }
                   location = /.well-known/caldav  { return 301 $real_scheme://$host/remote.php/dav/; }
@@ -213,7 +214,8 @@ components:
               location ~ ^/(?:build|tests|config|lib|3rdparty|templates|data)(?:$|/)  { return 404; }
               location ~ ^/(?:\.|autotest|occ|issue|indie|db_|console)                { return 404; }
 
-              # must stay above the static blocks or nginx loops prepending /index.php
+              # has to stay above the locations for static files
+              # otherwise nginx rewrites the request to the front controller in a loop
               location ~ \.php(?:$|/) {
                   rewrite ^/(?!index|remote|public|cron|core\/ajax\/update|status|ocs\/v[12]|updater\/.+|ocs-provider\/.+|.+\/richdocumentscode(_arm64)?\/proxy) /index.php$request_uri;
 
@@ -225,7 +227,7 @@ components:
                   include fastcgi_params;
                   fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
                   fastcgi_param PATH_INFO $path_info;
-                  # tls ends at the gateway, php still has to generate https urls
+                  # tls ends at the gateway, so requests reach php over plain http
                   fastcgi_param HTTPS on;
 
                   fastcgi_param modHeadersAvailable true;
@@ -263,8 +265,9 @@ components:
       fixPermissions:
         enabled: false
       custom:
-        # entrypoint writes redis-session.ini into conf.d, so neither dir can
-        # stay read-only. zz-pool.conf sorts after www.conf and wins
+        # the image's entrypoint writes a redis session file into the php conf dir
+        # that's why neither conf dir is read only
+        # the pool file written below sorts after www.conf, so its settings replace the ones in www.conf
         - name: seed-php-conf
           image: nextcloud:35.0.1-fpm@sha256:97e20437843ebf8735f9e4e75220eaaf6202b1af17ef45335ec1086caa40b35f
           command:
@@ -338,7 +341,7 @@ components:
             - name: config-files
               mountPath: /etc/nginx/conf.d/default.conf
               subPath: default.conf
-            # the image points every nginx temp path at /tmp
+            # the image sets every nginx temp path to this dir
             - name: tmp
               mountPath: /tmp
           resources:
@@ -348,7 +351,8 @@ components:
             limits:
               memory: 128Mi
               cpu: 250m
-          # 101 is the image's own uid, it owns /etc/nginx as that user
+          # the image runs as this uid by default
+          # that user owns the nginx config dir in the image
           securityContext:
             runAsUser: 101
             runAsGroup: 101
@@ -359,7 +363,7 @@ components:
               drop:
                 - ALL
 
-        # the image's own /cron.sh is busybox crond and needs root
+        # the image's /cron.sh runs busybox crond, and crond needs root
         - name: cron
           image: nextcloud:35.0.1-fpm@sha256:97e20437843ebf8735f9e4e75220eaaf6202b1af17ef45335ec1086caa40b35f
           command:
@@ -370,8 +374,8 @@ components:
                 php -f /var/www/html/cron.php
                 sleep 300
               done
-          # db creds are baked into config.php at install, these are the
-          # ones the image's config files read from the env on every request
+          # the installer writes the db creds into config.php, so they aren't set here
+          # the image's config files read these vars from the env on every request
           env:
             - name: TZ
               value: "Europe/Prague"

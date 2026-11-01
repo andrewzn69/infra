@@ -6,17 +6,17 @@ metadata:
   name: postgres
   namespace: database
   annotations:
-    # 2026-09-06: argocd pruned cluster and cnpg rebuilt it empty.
-    # the cnpg-cluster Application stopped rendering its own application.yaml,
-    # so with prune:true it pruned itself, and its resources-finalizer cascade
-    # deleted everything it owned, including this cluster and its pvcs.
-    # every db was lost and restored from daily volumesnapshot.
+    # on 2026-09-06 argocd deleted this cluster and its pvcs
+    # the cnpg-cluster Application had stopped rendering its own application.yaml
+    # pruning was on, so argocd pruned the Application itself
+    # because of its finalizer, argocd then deleted everything that the Application owned
+    # cnpg recreated the cluster empty
+    # every db had to be restored from a volume snapshot
     #
-    # Prune=false - never delete when it disappears from git
-    # Delete=false - never delete when the Application is deleted (cascade)
+    # with Prune off, argocd keeps the cluster when it's removed from git
+    # with Delete off, argocd keeps the cluster when the Application is deleted
     #
-    # deleting this cluster must be a deliberate manual step, never a side effect
-    # of some argocd sync.
+    # deleting this cluster has to be a manual step, never a side effect of an argocd sync
     argocd.argoproj.io/sync-options: Prune=false,Delete=false
 spec:
   instances: 2
@@ -33,10 +33,10 @@ spec:
   backup:
     volumeSnapshot:
       className: longhorn-backup-vsc
-      # no wal archive exists, a hot backup would block waiting
-      # for the archiver to ship the last segment
+      # there's no wal archive
+      # an online backup would hang while it waits for the last wal segment to be archived
       online: false
-      # deleting a backup deletes the snapshot, which deletes the nas copy
+      # deleting a backup also deletes its snapshot and the copy on the nas
       snapshotOwnerReference: backup
 
   managed:

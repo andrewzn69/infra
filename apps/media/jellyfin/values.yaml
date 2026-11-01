@@ -23,8 +23,7 @@ components:
         - path: /
           pathType: Prefix
 
-    # this is for jellyfin plugin(s) communicating with radarr/sonarr
-    # radarr and sonarr run on vizima, they are reachable only thorugh the egress proxy
+    # jellyfin plugins can only reach radarr and sonarr on vizima through the egress proxy
     hostAliases:
       - ip: 10.112.67.67
         hostnames:

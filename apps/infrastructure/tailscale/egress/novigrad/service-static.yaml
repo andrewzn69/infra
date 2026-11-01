@@ -7,7 +7,7 @@ metadata:
   namespace: tailscale-system
 spec:
   type: ClusterIP
-  # consumers hardcode this address in hostAliases
+  # apps hardcode this address in their hostAliases, so it can't change
   clusterIP: 10.112.67.67
   selector:
     tailscale.com/parent-resource: vizima-gateway

@@ -27,4 +27,4 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=true # cnpg cluster crds exceed the 256kB annotation limit
+      - ServerSideApply=true # the cnpg crds are too big for the annotation that client side apply writes

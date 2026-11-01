@@ -20,6 +20,7 @@ metadata:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false
 spec:
   instances: 2
+  primaryUpdateMethod: switchover
   storage:
     size: 30Gi
     storageClass: longhorn-cnpg

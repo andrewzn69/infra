@@ -163,14 +163,8 @@ components:
 
     volumes:
       emptyDir:
-        - name: html
-          mountPath: /usr/share/nginx/html
-        - name: nginx-conf
-          mountPath: /etc/nginx/conf.d
-        - name: nginx-cache
-          mountPath: /var/cache/nginx
-        - name: run
-          mountPath: /run
+        - name: runtime
+          mountPath: /var/lib/kaneo
 
     resources:
       requests:
@@ -201,29 +195,6 @@ components:
     initContainers:
       fixPermissions:
         enabled: false
-      custom:
-        - name: seed
-          image: ghcr.io/usekaneo/web:2.49.0@sha256:f3d0ebef335a8adfdc27eb489240966b63f69cadf6ec1e138d8a4688806ffb95
-          command:
-            - sh
-            - -c
-            - |
-              cp -a /usr/share/nginx/html/. /seed/html/
-              cp -a /etc/nginx/conf.d/. /seed/conf/
-          volumeMounts:
-            - name: html
-              mountPath: /seed/html
-            - name: nginx-conf
-              mountPath: /seed/conf
-          securityContext:
-            runAsUser: 1001
-            runAsGroup: 1001
-            runAsNonRoot: true
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-            capabilities:
-              drop:
-                - ALL
 
     probes:
       liveness:

@@ -18,7 +18,7 @@ components:
   api:
     image:
       repository: ghcr.io/usekaneo/api
-      tag: "2.35.0@sha256:aab8fa18d420940ba7faf4f47fc61b3251633a24d5249ba69bcfe714ae6297a4"
+      tag: "2.49.0@sha256:2c515e88ef200c61cd9a0072156546ee883619dc2b11095949c8ec203bc01d31"
       pullPolicy: IfNotPresent
 
     replicaCount: 1

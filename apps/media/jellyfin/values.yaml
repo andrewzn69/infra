@@ -37,6 +37,59 @@ components:
 
     env: []
 
+    # TODO: remove once jellyfin runs on the new volumes
+    initContainers:
+      custom:
+        - name: rewrite-db-paths
+          image: docker.io/library/alpine:3.24@sha256:f59abe656b692d901e184be3445e084786602108599d2a51d229c0f5a48c71bf
+          env:
+            # builds one update per column of every table for each old path
+            - name: REWRITE_QUERIES
+              value: |
+                WITH moves(old_path, new_path) AS (
+                  VALUES
+                    ('/config/metadata', '/metadata'),
+                    ('/config/root', '/data/root'),
+                    ('/config/config/', '/config/')
+                )
+                SELECT format(
+                  'UPDATE "%w" SET "%w" = replace("%w", %Q, %Q) WHERE typeof("%w") = ''text'' AND instr("%w", %Q);'
+                  || ' SELECT %Q, %Q, %Q, changes() WHERE changes() > 0;',
+                  m.name, p.name, p.name, old_path, new_path, p.name, p.name, old_path,
+                  m.name, p.name, old_path)
+                FROM sqlite_master m
+                JOIN pragma_table_info(m.name) p
+                CROSS JOIN moves
+                WHERE m.type = 'table';
+          command:
+            - sh
+            - -c
+            - |
+              set -euo pipefail
+              # the root fs is read only, so apk installs sqlite into the emptyDir
+              mkdir -p /tmp/apk/etc/apk
+              cp -r /etc/apk/keys /tmp/apk/etc/apk/
+              apk add --root /tmp/apk --initdb --usermode --no-scripts --repositories-file /etc/apk/repositories sqlite
+              export LD_LIBRARY_PATH=/tmp/apk/usr/lib:/tmp/apk/lib
+              sqlite=/tmp/apk/usr/bin/sqlite3
+              db=/data/data/jellyfin.db
+              "$sqlite" "$db" "$REWRITE_QUERIES" > /tmp/apk/updates.sql
+              echo 'table|column|old path|rows changed'
+              { echo 'BEGIN;'; cat /tmp/apk/updates.sql; echo 'COMMIT;'; } | "$sqlite" -bail "$db"
+              # jellyfin gets the same emptyDir as its /tmp
+              rm -rf /tmp/apk
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: tmp
+              mountPath: /tmp
+
     volumes:
       pvc:
         - name: config

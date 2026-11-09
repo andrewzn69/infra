@@ -7,11 +7,6 @@ components:
       tag: "12.4@sha256:fea863d0cd9ec445985d9c75fc6ed64e38a1d2766cf0c250a33d553f4fc1b771"
       pullPolicy: IfNotPresent
 
-    # TODO: remove after files are copied to the new volumes
-    command:
-      - sleep
-      - infinity
-
     replicaCount: 1
 
     service:
@@ -35,7 +30,14 @@ components:
           - radarr.internal.zemn.xyz
           - sonarr.internal.zemn.xyz
 
-    env: []
+    env:
+      - name: JELLYFIN_DATA_DIR
+        value: "/data"
+      # TODO: switch to /config once jellyfin-config is recreated
+      - name: JELLYFIN_CONFIG_DIR
+        value: "/backup"
+      - name: JELLYFIN_LOG_DIR
+        value: "/log"
 
     # TODO: remove once jellyfin runs on the new volumes
     initContainers:

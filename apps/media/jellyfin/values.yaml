@@ -67,7 +67,7 @@ components:
           storageClassName: longhorn
         - name: cache
           mountPath: /cache
-          size: 1Gi
+          size: 3Gi
           accessMode: ReadWriteOnce
           storageClassName: longhorn
 

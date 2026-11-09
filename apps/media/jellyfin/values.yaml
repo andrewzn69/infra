@@ -44,6 +44,26 @@ components:
           size: 15Gi
           accessMode: ReadWriteOnce
           storageClassName: longhorn
+        - name: data
+          mountPath: /data
+          size: 8Gi
+          accessMode: ReadWriteOnce
+          storageClassName: longhorn
+        - name: metadata
+          mountPath: /metadata
+          size: 6Gi
+          accessMode: ReadWriteOnce
+          storageClassName: longhorn
+        - name: log
+          mountPath: /log
+          size: 100Mi
+          accessMode: ReadWriteOnce
+          storageClassName: longhorn
+        - name: backup
+          mountPath: /backup
+          size: 100Mi
+          accessMode: ReadWriteOnce
+          storageClassName: longhorn
 
       nfs:
         - name: movies

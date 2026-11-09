@@ -114,6 +114,11 @@ components:
           size: 100Mi
           accessMode: ReadWriteOnce
           storageClassName: longhorn
+        - name: transcodes
+          mountPath: /transcodes
+          size: 10Gi
+          accessMode: ReadWriteOnce
+          storageClassName: longhorn
 
       nfs:
         - name: movies

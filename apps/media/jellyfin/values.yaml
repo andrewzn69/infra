@@ -128,6 +128,11 @@ components:
           size: 10Gi
           accessMode: ReadWriteOnce
           storageClassName: longhorn
+        - name: cache
+          mountPath: /cache
+          size: 1Gi
+          accessMode: ReadWriteOnce
+          storageClassName: longhorn
 
       nfs:
         - name: movies
@@ -142,8 +147,6 @@ components:
           readOnly: true
 
       emptyDir:
-        - name: cache
-          mountPath: /cache
         - name: tmp
           mountPath: /tmp
 

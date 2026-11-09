@@ -38,9 +38,8 @@ components:
     env:
       - name: JELLYFIN_DATA_DIR
         value: "/data"
-      # TODO: switch to /config once jellyfin-config is recreated
       - name: JELLYFIN_CONFIG_DIR
-        value: "/backup"
+        value: "/config"
       - name: JELLYFIN_LOG_DIR
         value: "/log"
 

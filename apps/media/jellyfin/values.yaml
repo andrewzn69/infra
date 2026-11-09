@@ -65,11 +65,6 @@ components:
           size: 100Mi
           accessMode: ReadWriteOnce
           storageClassName: longhorn
-        - name: backup
-          mountPath: /backup
-          size: 100Mi
-          accessMode: ReadWriteOnce
-          storageClassName: longhorn
         - name: transcodes
           mountPath: /transcodes
           size: 10Gi

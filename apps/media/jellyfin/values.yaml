@@ -94,11 +94,6 @@ components:
 
     volumes:
       pvc:
-        - name: config
-          mountPath: /config
-          size: 15Gi
-          accessMode: ReadWriteOnce
-          storageClassName: longhorn
         - name: data
           mountPath: /data
           size: 8Gi

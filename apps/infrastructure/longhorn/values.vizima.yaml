@@ -68,6 +68,8 @@ longhornManager:
     requests:
       cpu: 50m
       memory: 320Mi
+networkPolicies:
+  restrictInternalTraffic: false
 persistence:
   defaultClassReplicaCount: 2
 preUpgradeChecker:

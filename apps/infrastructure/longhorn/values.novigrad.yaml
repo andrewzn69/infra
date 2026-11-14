@@ -1,5 +1,7 @@
 defaultSettings:
   defaultDataPath: /var/mnt/data/longhorn
+networkPolicies:
+  restrictInternalTraffic: false
 persistence:
   defaultClassReplicaCount: 2
 preUpgradeChecker:

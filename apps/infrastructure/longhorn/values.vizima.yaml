@@ -1,3 +1,5 @@
+csi:
+  allowControllerSecretAccess: false
 defaultBackupStore:
   backupTarget: nfs://100.64.100.10:/storage/backup/longhorn/vizima
 defaultSettings:

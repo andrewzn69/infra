@@ -1,3 +1,5 @@
+csi:
+  allowControllerSecretAccess: false
 defaultSettings:
   defaultDataPath: /var/mnt/data/longhorn
 networkPolicies:

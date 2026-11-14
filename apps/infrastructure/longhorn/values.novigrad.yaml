@@ -2,6 +2,7 @@ csi:
   allowControllerSecretAccess: false
 defaultSettings:
   defaultDataPath: /var/mnt/data/longhorn
+  concurrentAutomaticEngineUpgradePerNodeLimit: "1"
 networkPolicies:
   restrictInternalTraffic: false
 persistence:

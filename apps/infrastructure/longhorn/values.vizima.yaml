@@ -6,6 +6,7 @@ defaultSettings:
   defaultDataPath: /var/mnt/data/longhorn
   guaranteedInstanceManagerCpu: "12"
   concurrentReplicaRebuildPerNodeLimit: "2"
+  concurrentAutomaticEngineUpgradePerNodeLimit: "1"
   engineImagePodLivenessProbeTimeout: "30"
   engineImagePodLivenessProbePeriod: "60"
   # when an app is scaled down, its volume is detached

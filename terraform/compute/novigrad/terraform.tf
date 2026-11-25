@@ -20,7 +20,7 @@ terraform {
     }
     oci = {
       source  = "oracle/oci"
-      version = "~> 8.14"
+      version = "~> 9.0"
     }
     tailscale = {
       source  = "tailscale/tailscale"
